@@ -47,12 +47,13 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStart }) => {
         </div>
       </div>
       
-      <div className="space-y-4 w-full max-w-md">
+      <div className="space-y-4 w-full max-w-lg">
         <h2 className="text-2xl font-bangers tracking-wider text-cyan-300">Difficulty</h2>
-        <div className="flex justify-center space-x-4">
+        <div className="flex flex-wrap justify-center gap-4">
             <OptionButton label="Easy" onClick={() => setDifficulty('easy')} isActive={difficulty === 'easy'} color="green" />
             <OptionButton label="Medium" onClick={() => setDifficulty('medium')} isActive={difficulty === 'medium'} color="yellow" />
             <OptionButton label="Hard" onClick={() => setDifficulty('hard')} isActive={difficulty === 'hard'} color="red" />
+            <OptionButton label="Ultra Nightmare" onClick={() => setDifficulty('ultra nightmare')} isActive={difficulty === 'ultra nightmare'} color="purple" />
         </div>
       </div>
 

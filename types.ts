@@ -104,7 +104,7 @@ export interface ExplosionInstance {
 
 export type GameStatus = 'start_screen' | 'playing' | 'game_over';
 
-export type Difficulty = 'easy' | 'medium' | 'hard';
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'ultra nightmare';
 export type GameMode = 'fixed' | 'infinity';
 
 export type Wave = {

@@ -8,7 +8,8 @@ export const WAVE_COOLDOWN_MS = 5000;
 export const DIFFICULTY_SETTINGS: Record<Difficulty, { initialMoney: number; initialHealth: number; towerCostMultiplier: number }> = {
     easy: { initialMoney: 650, initialHealth: 150, towerCostMultiplier: 0.9 },
     medium: { initialMoney: 500, initialHealth: 100, towerCostMultiplier: 1.0 },
-    hard: { initialMoney: 400, initialHealth: 75, towerCostMultiplier: 1.1 }
+    hard: { initialMoney: 400, initialHealth: 75, towerCostMultiplier: 1.1 },
+    'ultra nightmare': { initialMoney: 300, initialHealth: 50, towerCostMultiplier: 1.25 }
 };
 
 // VISUALS
@@ -19,6 +20,11 @@ const BombShooterVisual = React.createElement('div', { className: "relative w-14
 const SuperMonkeyVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-10 h-10 bg-red-600 rounded-b-full rotate-12" }), React.createElement('div', { className: "absolute w-8 h-8 bg-blue-800 rounded-full" }), React.createElement('div', { className: "absolute w-7 h-7 bg-orange-200 rounded-full -translate-y-1" }), React.createElement('div', { className: "absolute w-2 h-3 bg-yellow-300 rounded-full -translate-x-2 -translate-y-0.5 border border-black" }), React.createElement('div', { className: "absolute w-2 h-3 bg-yellow-300 rounded-full translate-x-2 -translate-y-0.5 border border-black" }));
 const SniperMonkeyVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-green-900 rounded-full" }), React.createElement('div', { className: "absolute w-2 h-12 bg-gray-800 border-2 border-gray-900 rounded-sm" }));
 const GlueGunnerVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-yellow-900 rounded-full" }), React.createElement('div', { className: "absolute w-4 h-8 bg-lime-500 -translate-y-2 rounded-md border-2 border-gray-900" }), React.createElement('div', { className: "absolute w-8 h-8 border-4 border-lime-700 rounded-full -translate-y-3" }));
+const NinjaMonkeyVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-gray-800 rounded-full" }), React.createElement('div', { className: "absolute w-9 h-3 bg-red-600 -translate-y-1" }), React.createElement('div', { className: "absolute w-2 h-2 bg-white rounded-full -translate-x-2 -translate-y-1" }), React.createElement('div', { className: "absolute w-2 h-2 bg-white rounded-full translate-x-2 -translate-y-1" }));
+const AlchemistVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-purple-900 rounded-full" }), React.createElement('div', { className: "absolute w-4 h-6 bg-green-400/50 border-2 border-green-300 rounded-t-full rounded-b-lg -translate-y-2" }));
+const DruidVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-green-800 rounded-full" }), React.createElement('div', { className: "absolute w-2 h-4 bg-yellow-900 -translate-x-3 -translate-y-4 rotate-[-30deg] rounded-sm" }), React.createElement('div', { className: "absolute w-2 h-4 bg-yellow-900 translate-x-3 -translate-y-4 rotate-[30deg] rounded-sm" }));
+const MortarTowerVisual = React.createElement('div', { className: "relative w-14 h-14 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-10 h-10 bg-gray-700 rounded-full" }), React.createElement('div', { className: "absolute w-6 h-10 bg-gray-900 -translate-y-2 border-4 border-gray-600 rounded-t-md" }));
+const SpikeFactoryVisual = React.createElement('div', { className: "relative w-14 h-14 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-12 h-12 bg-orange-700 rounded-md" }), React.createElement('div', { className: "absolute w-3 h-3 bg-gray-400 rotate-45 -translate-x-4" }), React.createElement('div', { className: "absolute w-3 h-3 bg-gray-400 rotate-45 translate-x-4" }), React.createElement('div', { className: "absolute w-3 h-3 bg-gray-400 rotate-45 -translate-y-4" }), React.createElement('div', { className: "absolute w-3 h-3 bg-gray-400 rotate-45 translate-y-4" }));
 const MOABVisual = React.createElement('div', { className: "relative w-full h-full" }, React.createElement('div', { className: "absolute w-full h-full bg-blue-800 rounded-full" }), React.createElement('div', { className: "absolute w-[90%] h-[90%] left-[5%] top-[5%] bg-blue-900 rounded-full" }), React.createElement('div', { className: "absolute w-full h-1/2 bg-white/20 top-0 rounded-t-full" }), React.createElement('div', { className: "absolute top-1/2 -translate-y-1/2 left-1/4 text-white font-black text-2xl -rotate-12" }, "MOAB"));
 
 const DartVisual = React.createElement('div', { className: 'w-1 h-4 bg-gray-700 rounded-full rotate-45' });
@@ -28,6 +34,11 @@ const BombVisual = React.createElement('div', { className: "w-4 h-4 bg-black rou
 const PlasmaVisual = React.createElement('div', { className: 'w-2 h-4 bg-pink-500 rounded-full shadow-[0_0_8px_2px_#ec4899]' });
 const BulletVisual = React.createElement('div', { className: 'w-1 h-3 bg-yellow-300' });
 const GlueGlobVisual = React.createElement('div', { className: 'w-3 h-3 bg-lime-500 rounded-full opacity-75' });
+const ShurikenVisual = React.createElement('div', { className: "relative w-4 h-4" }, React.createElement('div', { className: 'absolute w-1 h-4 bg-gray-500 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' }), React.createElement('div', { className: 'absolute w-4 h-1 bg-gray-500 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' }));
+const AcidPotionVisual = React.createElement('div', { className: "w-4 h-5 bg-green-500/70 rounded-t-full rounded-b-md border-2 border-green-300" });
+const ThornVisual = React.createElement('div', { className: 'w-1 h-5 bg-green-700' });
+const MortarShellVisual = React.createElement('div', { className: "w-5 h-5 bg-gray-800 rounded-full" }, React.createElement('div', { className: "w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[15px] border-b-red-500 -translate-y-2" }));
+const SpikeVisual = React.createElement('div', { className: 'w-1 h-4 bg-gray-400' });
 
 // PROJECTILES
 export const PROJECTILE_TYPES: Record<string, ProjectileType> = {
@@ -38,6 +49,11 @@ export const PROJECTILE_TYPES: Record<string, ProjectileType> = {
     plasma: { id: 'plasma', speed: 1000, damage: 1, visual: PlasmaVisual, pierce: 2, canPopLead: true },
     bullet: { id: 'bullet', speed: 2500, damage: 5, visual: BulletVisual, pierce: 1 },
     glue: { id: 'glue', speed: 500, damage: 0, visual: GlueGlobVisual, pierce: 1, slow: { factor: 0.4, duration: 4000 } },
+    shuriken: { id: 'shuriken', speed: 900, damage: 1, visual: ShurikenVisual, pierce: 3 },
+    acid_potion: { id: 'acid_potion', speed: 400, damage: 1, visual: AcidPotionVisual, pierce: 1, aoeRange: 40, canPopLead: true },
+    thorn: { id: 'thorn', speed: 800, damage: 1, visual: ThornVisual, pierce: 5 },
+    mortar_shell: { id: 'mortar_shell', speed: 300, damage: 2, visual: MortarShellVisual, pierce: 1, aoeRange: 80, canPopLead: true },
+    spike: { id: 'spike', speed: 1000, damage: 1, visual: SpikeVisual, pierce: 10 },
 };
 
 // TOWERS
@@ -130,6 +146,71 @@ export const TOWER_TYPES: Record<string, TowerType> = {
             [
                 { name: 'Super Range', cost: 800, description: 'Increases attack range.', effects: { range: 250 } },
                 { name: 'Epic Range', cost: 1500, description: 'Massive attack range.', effects: { range: 300 } },
+            ]
+        ]
+    },
+    ninja_monkey: {
+        id: 'ninja_monkey', name: 'Ninja Monkey', cost: 450, range: 160, fireRate: 3.0, projectile: PROJECTILE_TYPES.shuriken, size: 25, visual: NinjaMonkeyVisual,
+        upgrades: [
+            [
+                { name: 'Ninja Discipline', cost: 250, description: 'Increases attack speed.', effects: { fireRate: 4.0 } },
+                { name: 'Double Shot', cost: 400, description: 'Throws 2 shurikens at once.', effects: { /* Handled in code */ } },
+            ],
+            [
+                { name: 'Sharp Shurikens', cost: 300, description: 'Shurikens pop 3 extra balloons.', effects: { projectile: { pierce: 6 } } },
+                { name: 'Flash Bomb', cost: 600, description: 'Throws a small bomb that can pop Lead.', effects: { projectile: { damage: 2, aoeRange: 30, canPopLead: true } } },
+            ]
+        ]
+    },
+    alchemist: {
+        id: 'alchemist', name: 'Alchemist', cost: 500, range: 140, fireRate: 0.8, projectile: PROJECTILE_TYPES.acid_potion, size: 25, visual: AlchemistVisual,
+        upgrades: [
+            [
+                { name: 'Larger Potions', cost: 250, description: 'Increases splash radius.', effects: { projectile: { aoeRange: 60 } } },
+                { name: 'Perishing Potions', cost: 500, description: 'Potions deal more damage.', effects: { projectile: { damage: 3 } } },
+            ],
+            [
+                { name: 'Faster Throwing', cost: 350, description: 'Throws potions faster.', effects: { fireRate: 1.2 } },
+                { name: 'Acidic Mixture Dip', cost: 600, description: 'Potions can dissolve more layers.', effects: { projectile: { pierce: 5 } } },
+            ]
+        ]
+    },
+    druid: {
+        id: 'druid', name: 'Druid', cost: 350, range: 150, fireRate: 1.0, projectile: PROJECTILE_TYPES.thorn, size: 25, visual: DruidVisual,
+        upgrades: [
+            [
+                { name: 'Hard Thorns', cost: 200, description: 'Thorns can pop more balloons.', effects: { projectile: { pierce: 8 } } },
+                { name: 'Heart of Thunder', cost: 750, description: 'Attacks can pop Lead balloons and deal more damage.', effects: { projectile: { damage: 3, canPopLead: true } } },
+            ],
+            [
+                { name: 'Druid of the Jungle', cost: 300, description: 'Increases attack range.', effects: { range: 180 } },
+                { name: 'Heart of Vengeance', cost: 400, description: 'Attacks faster.', effects: { fireRate: 1.5 } },
+            ]
+        ]
+    },
+    mortar_tower: {
+        id: 'mortar_tower', name: 'Mortar Tower', cost: 600, range: 250, fireRate: 0.5, projectile: PROJECTILE_TYPES.mortar_shell, size: 30, visual: MortarTowerVisual,
+        upgrades: [
+            [
+                { name: 'Bigger Blast', cost: 400, description: 'Increases explosion radius.', effects: { projectile: { aoeRange: 100 } } },
+                { name: 'Bloon Buster', cost: 800, description: 'Shells deal more damage.', effects: { projectile: { damage: 5 } } },
+            ],
+            [
+                { name: 'Increased Accuracy', cost: 200, description: 'Slightly increases attack speed.', effects: { fireRate: 0.7 } },
+                { name: 'Rapid Reload', cost: 700, description: 'Greatly increases attack speed.', effects: { fireRate: 1.2 } },
+            ]
+        ]
+    },
+    spike_factory: {
+        id: 'spike_factory', name: 'Spike Factory', cost: 700, range: 120, fireRate: 0.3, projectile: PROJECTILE_TYPES.spike, size: 30, visual: SpikeFactoryVisual,
+        upgrades: [
+            [
+                { name: 'Faster Production', cost: 450, description: 'Produces spikes faster.', effects: { fireRate: 0.5 } },
+                { name: 'Even Faster Production', cost: 650, description: 'Produces spikes much faster.', effects: { fireRate: 0.8 } },
+            ],
+            [
+                { name: 'Bigger Stacks', cost: 500, description: 'Spikes can pop more balloons.', effects: { projectile: { pierce: 20 } } },
+                { name: 'White Hot Spikes', cost: 700, description: 'Spikes can pop Lead balloons.', effects: { projectile: { canPopLead: true } } },
             ]
         ]
     },

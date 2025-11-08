@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useReducer, useRef, useCallback } from 'react';
 import { TOWER_TYPES, BALLOON_TYPES, GAME_PATH, WAVES, PROJECTILE_TYPES, WAVE_COOLDOWN_MS, DIFFICULTY_SETTINGS } from '../constants';
 // FIX: Imported the BalloonType to resolve a type error.
@@ -280,6 +281,14 @@ const gameReducer = produce((draft: GameState, action: GameAction) => {
                                     distanceTraveled: 0, pierceLeft: stats.projectile.pierce ?? 1, hitBalloonIds: []
                                 });
                             }
+                        } else if (stats.id === 'ninja_monkey' && t.upgrades.path1 >= 2) {
+                             for (let i = 0; i < 2; i++) {
+                                 draft.projectiles.push({
+                                     id: `p_${t.id}_${draft.gameTime}_${i}`, typeId: stats.projectile.id,
+                                     position: { ...t.position }, angle: angle + (i * 0.1 - 0.05),
+                                     distanceTraveled: 0, pierceLeft: stats.projectile.pierce ?? 1, hitBalloonIds: []
+                                 });
+                             }
                         } else {
                              draft.projectiles.push({
                                 id: `p_${t.id}_${draft.gameTime}`, typeId: stats.projectile.id,
