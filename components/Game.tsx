@@ -112,25 +112,22 @@ const createInitialState = (difficulty: Difficulty): GameState => {
 
 const createGameReducer = (map: MapData) => {
     const path = map.path;
-    const pathTotalLength = path.slice(1).reduce((acc, p, i) => acc + getDistance(path[i], p), 0);
+    const pathSegments = path.slice(1).map((p, i) => ({ start: path[i], end: p, length: getDistance(path[i], p) }));
+    const pathTotalLength = pathSegments.reduce((acc, seg) => acc + seg.length, 0);
     
     const getPositionOnPath = (progress: number): Vector2D => {
         const distanceToTravel = progress * pathTotalLength;
         let distanceTraveled = 0;
 
-        for (let i = 0; i < path.length - 1; i++) {
-            const start = path[i];
-            const end = path[i + 1];
-            const segmentLength = getDistance(start, end);
-
-            if (distanceTraveled + segmentLength >= distanceToTravel) {
-                const segmentProgress = (distanceToTravel - distanceTraveled) / segmentLength;
+        for (const segment of pathSegments) {
+            if (distanceTraveled + segment.length >= distanceToTravel) {
+                const segmentProgress = (distanceToTravel - distanceTraveled) / segment.length;
                 return {
-                    x: start.x + (end.x - start.x) * segmentProgress,
-                    y: start.y + (end.y - start.y) * segmentProgress,
+                    x: segment.start.x + (segment.end.x - segment.start.x) * segmentProgress,
+                    y: segment.start.y + (segment.end.y - segment.start.y) * segmentProgress,
                 };
             }
-            distanceTraveled += segmentLength;
+            distanceTraveled += segment.length;
         }
         return { ...path[path.length - 1] };
     };
@@ -224,7 +221,7 @@ const createGameReducer = (map: MapData) => {
                 }
                 draft.balloons.push(...newBalloons);
 
-                // 2. Move balloons
+                // 2. Move balloons & projectiles
                 let healthLost = 0;
                 draft.balloons = draft.balloons.filter(b => {
                     const balloonType = BALLOON_TYPES[b.typeId.startsWith('moab_w') ? 'moab' : b.typeId];
@@ -242,9 +239,10 @@ const createGameReducer = (map: MapData) => {
                 });
                 draft.health -= healthLost;
 
-                // 3. Move projectiles
                 draft.projectiles = draft.projectiles.filter(p => {
                     const type = PROJECTILE_TYPES[p.typeId];
+                    if(type.isStationary) return draft.gameTime - p.createdAt < (type.duration ?? 5000);
+                    
                     const distance = type.speed * deltaTime;
                     p.position.x += Math.cos(p.angle) * distance;
                     p.position.y += Math.sin(p.angle) * distance;
@@ -252,54 +250,87 @@ const createGameReducer = (map: MapData) => {
                     return p.position.x > -100 && p.position.x < 1300 && p.position.y > -100 && p.position.y < 900;
                 });
 
-                // 4. Tower targeting and shooting
+
+                // 3. Tower targeting and shooting
                 draft.towers.forEach(t => {
                     const stats = getTowerStats(t, costMultiplier);
                     const fireInterval = 1000 / stats.fireRate;
 
                     if (draft.gameTime - t.lastShotTime >= fireInterval) {
                         let target: BalloonInstance | null = null;
-                        let minPathProgress = -1;
 
-                        draft.balloons.forEach(b => {
-                            if (getDistance(t.position, b.position) <= stats.range) {
-                                if (b.pathProgress > minPathProgress) {
-                                    minPathProgress = b.pathProgress;
+                        if (stats.id === 'sniper_monkey') {
+                            let maxHealth = -1;
+                            draft.balloons.forEach(b => {
+                                const bType = BALLOON_TYPES[b.typeId.startsWith('moab_w') ? 'moab' : b.typeId];
+                                const currentHealth = b.health + (bType.isBlimp ? 1000 : 0);
+                                if (currentHealth > maxHealth) {
+                                    maxHealth = currentHealth;
                                     target = b;
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            let maxPathProgress = -1;
+                            draft.balloons.forEach(b => {
+                                if (getDistance(t.position, b.position) <= stats.range) {
+                                    if (b.pathProgress > maxPathProgress) {
+                                        maxPathProgress = b.pathProgress;
+                                        target = b;
+                                    }
+                                }
+                            });
+                        }
 
-                        if (target) {
-                            t.targetId = target.id;
-                            const angle = getAngle(t.position, target.position);
-                            t.angle = angle;
+                        if (target || stats.id === 'druid') {
                             t.lastShotTime = draft.gameTime;
-
-                            draft.muzzleFlashes.push({ id: `mf_${t.id}_${draft.gameTime}`, position: { ...t.position }, createdAt: draft.gameTime, angle: angle });
-
+                            if (target) {
+                                const angle = getAngle(t.position, target.position);
+                                t.angle = angle;
+                            }
+                            
+                            // Special Firing Logic
                             if (stats.id === 'tack_shooter') {
+                                draft.muzzleFlashes.push({ id: `mf_${t.id}_${draft.gameTime}`, position: { ...t.position }, createdAt: draft.gameTime, angle: 0 });
                                 const tackCount = t.upgrades.path2 >= 1 ? (t.upgrades.path2 >= 2 ? 12 : 10) : 8;
                                 for (let i = 0; i < tackCount; i++) {
                                     draft.projectiles.push({
                                         id: `p_${t.id}_${draft.gameTime}_${i}`, typeId: stats.projectile.id,
                                         position: { ...t.position }, angle: (i / tackCount) * 2 * Math.PI,
-                                        distanceTraveled: 0, pierceLeft: stats.projectile.pierce ?? 1, hitBalloonIds: []
+                                        distanceTraveled: 0, pierceLeft: stats.projectile.pierce ?? 1, hitBalloonIds: [], createdAt: draft.gameTime
                                     });
                                 }
                             } else if (stats.id === 'ninja_monkey' && t.upgrades.path1 >= 2) {
+                                draft.muzzleFlashes.push({ id: `mf_${t.id}_${draft.gameTime}`, position: { ...t.position }, createdAt: draft.gameTime, angle: t.angle });
                                 for (let i = 0; i < 2; i++) {
                                     draft.projectiles.push({
                                         id: `p_${t.id}_${draft.gameTime}_${i}`, typeId: stats.projectile.id,
-                                        position: { ...t.position }, angle: angle + (i * 0.1 - 0.05),
-                                        distanceTraveled: 0, pierceLeft: stats.projectile.pierce ?? 1, hitBalloonIds: []
+                                        position: { ...t.position }, angle: t.angle + (i * 0.1 - 0.05),
+                                        distanceTraveled: 0, pierceLeft: stats.projectile.pierce ?? 1, hitBalloonIds: [], createdAt: draft.gameTime
                                     });
                                 }
-                            } else {
+                            } else if (stats.id === 'druid') {
+                                 // Find a random point on the path within range
+                                const validSegments = pathSegments.filter(seg => getDistance(t.position, seg.start) < stats.range || getDistance(t.position, seg.end) < stats.range);
+                                if (validSegments.length > 0) {
+                                    const randomSegment = validSegments[Math.floor(Math.random() * validSegments.length)];
+                                    const randomProgress = Math.random();
+                                    const thornPosition = {
+                                        x: randomSegment.start.x + (randomSegment.end.x - randomSegment.start.x) * randomProgress,
+                                        y: randomSegment.start.y + (randomSegment.end.y - randomSegment.start.y) * randomProgress
+                                    };
+                                    draft.projectiles.push({
+                                        id: `p_${t.id}_${draft.gameTime}`, typeId: stats.projectile.id,
+                                        position: thornPosition, angle: 0,
+                                        distanceTraveled: 0, pierceLeft: stats.projectile.pierce ?? 1, hitBalloonIds: [], createdAt: draft.gameTime
+                                    });
+                                }
+                            }
+                            else if (target) {
+                                draft.muzzleFlashes.push({ id: `mf_${t.id}_${draft.gameTime}`, position: { ...t.position }, createdAt: draft.gameTime, angle: t.angle });
                                 draft.projectiles.push({
                                     id: `p_${t.id}_${draft.gameTime}`, typeId: stats.projectile.id,
-                                    position: { ...t.position }, angle: angle,
-                                    distanceTraveled: 0, pierceLeft: stats.projectile.pierce ?? 1, hitBalloonIds: []
+                                    position: { ...t.position }, angle: t.angle,
+                                    distanceTraveled: 0, pierceLeft: stats.projectile.pierce ?? 1, hitBalloonIds: [], createdAt: draft.gameTime
                                 });
                             }
                         }
@@ -307,7 +338,7 @@ const createGameReducer = (map: MapData) => {
                 });
 
 
-                // 5. Collision detection
+                // 4. Collision detection
                 let moneyGained = 0;
                 const childBalloonsToSpawn: BalloonInstance[] = [];
                 const newPopAnimations: PopAnimationInstance[] = [];
@@ -319,9 +350,9 @@ const createGameReducer = (map: MapData) => {
                     for (const b of draft.balloons) {
                         if (poppedBalloonIds.has(b.id) || p.hitBalloonIds.includes(b.id)) continue;
                         const balloonType = BALLOON_TYPES[b.typeId.startsWith('moab_w') ? 'moab' : b.typeId];
-                        if (getDistance(p.position, b.position) < balloonType.size) {
-                            const projectileType = PROJECTILE_TYPES[p.typeId];
-                            
+                        const projectileType = PROJECTILE_TYPES[p.typeId];
+
+                        if (getDistance(p.position, b.position) < balloonType.size + (projectileType.isStationary ? 10 : 0)) {
                             // Check immunities
                             if (balloonType.isLead && !projectileType.canPopLead) continue;
                             if (balloonType.immuneToFreeze && projectileType.slow) continue;
@@ -365,7 +396,7 @@ const createGameReducer = (map: MapData) => {
                                     }
                                 });
                             }
-                            if(p.pierceLeft <= 0) break;
+                            if(p.pierceLeft <= 0 && !projectileType.isStationary) break;
                         }
                     }
                 });
@@ -377,13 +408,13 @@ const createGameReducer = (map: MapData) => {
                 draft.popAnimations.push(...newPopAnimations);
                 draft.explosions.push(...newExplosions);
 
-                // 6. Handle animations
+                // 5. Handle animations
                 draft.popAnimations = draft.popAnimations.filter(p => draft.gameTime - p.createdAt < 400);
                 draft.cashPops = draft.cashPops.filter(p => draft.gameTime - p.createdAt < 700);
                 draft.explosions = draft.explosions.filter(e => draft.gameTime - e.createdAt < 300);
                 draft.muzzleFlashes = draft.muzzleFlashes.filter(mf => draft.gameTime - mf.createdAt < 100);
 
-                // 7. Auto-start next wave & give wave bonus
+                // 6. Auto-start next wave & give wave bonus
                 const isWaveOver = !draft.waveSpawning && draft.balloons.length === 0;
                 const hasMoreWaves = gameMode === 'infinity' || draft.waveNumber < WAVES.length;
                 if (isWaveOver && draft.waveNumber > 0 && hasMoreWaves && draft.timeToNextWave <= 0) {
@@ -539,7 +570,7 @@ const Game: React.FC<{ onGameOver: (wave: number, result: 'win' | 'loss') => voi
     const [state, dispatch] = useReducer(gameReducer, difficulty, createInitialState);
     
     const [placingTower, setPlacingTower] = useState<TowerType | null>(null);
-    const [mousePos, setMousePos] = useState<Vector2D>({ x: 0, y: 0 });
+    const [cursorPos, setCursorPos] = useState<Vector2D>({ x: 0, y: 0 });
     const gameBoardRef = useRef<HTMLDivElement>(null);
     const lastTimeRef = useRef<number>(performance.now());
     const prevState = usePrevious(state);
@@ -598,17 +629,9 @@ const Game: React.FC<{ onGameOver: (wave: number, result: 'win' | 'loss') => voi
         }
     }, [state.health, state.waveNumber, state.balloons.length, onGameOver, gameMode]);
 
-    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        if (gameBoardRef.current) {
-            const rect = gameBoardRef.current.getBoundingClientRect();
-            const scale = rect.width / 1200;
-            const mouseX = (e.clientX - rect.left) / scale;
-            const mouseY = (e.clientY - rect.top) / scale;
-            setMousePos({ x: mouseX, y: mouseY });
-        }
-    }, []);
-    
     const isPlacementValid = useCallback((position: Vector2D, size: number) => {
+        if(position.x < 0 || position.x > 1200 || position.y < 0 || position.y > 800) return false;
+        
         const pathMargin = 20 + size;
         for (let i = 0; i < currentMap.path.length - 1; i++) {
             const start = currentMap.path[i];
@@ -636,29 +659,49 @@ const Game: React.FC<{ onGameOver: (wave: number, result: 'win' | 'loss') => voi
         return true;
     }, [state.towers, currentMap]);
 
-    const handleBoardClick = useCallback(() => {
-        if (placingTower) {
-            const cost = Math.floor(placingTower.cost * costMultiplier);
-            if (isPlacementValid(mousePos, placingTower.size) && state.money >= cost) {
-                dispatch({
-                    type: 'PLACE_TOWER',
-                    payload: { 
-                        tower: { id: `t_${placingTower.id}_${Date.now()}`, typeId: placingTower.id, position: mousePos, lastShotTime: 0, angle: 0, upgrades: { path1: 0, path2: 0 } },
-                        cost
-                    },
-                });
-            }
-        } else {
-            dispatch({ type: 'SELECT_TOWER', payload: { towerId: null }});
+    const updateCursorPos = (e: React.MouseEvent | React.TouchEvent) => {
+        if (gameBoardRef.current) {
+            const rect = gameBoardRef.current.getBoundingClientRect();
+            const scale = rect.width / 1200;
+            const touch = 'touches' in e ? e.touches[0] : e;
+            const clientX = touch.clientX;
+            const clientY = touch.clientY;
+            const x = (clientX - rect.left) / scale;
+            const y = (clientY - rect.top) / scale;
+            setCursorPos({ x, y });
         }
-    }, [placingTower, mousePos, state.money, isPlacementValid, costMultiplier, dispatch]);
-    
-    const handleSelectTowerToPlace = (tower: TowerType) => {
+    };
+
+    const handleDragStart = (tower: TowerType, e: React.MouseEvent | React.TouchEvent) => {
+        e.preventDefault();
         playSound('click', 0.6);
         const cost = Math.floor(tower.cost * costMultiplier);
         if (state.money >= cost) {
             setPlacingTower(tower);
             dispatch({ type: 'SELECT_TOWER', payload: { towerId: null } });
+        }
+    };
+
+    const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+        if (placingTower) {
+            e.preventDefault();
+            updateCursorPos(e);
+        }
+    };
+
+    const handleDragEnd = () => {
+        if (placingTower) {
+            const cost = Math.floor(placingTower.cost * costMultiplier);
+            if (isPlacementValid(cursorPos, placingTower.size) && state.money >= cost) {
+                dispatch({
+                    type: 'PLACE_TOWER',
+                    payload: { 
+                        tower: { id: `t_${placingTower.id}_${Date.now()}`, typeId: placingTower.id, position: cursorPos, lastShotTime: 0, angle: 0, upgrades: { path1: 0, path2: 0 } },
+                        cost
+                    },
+                });
+            }
+            setPlacingTower(null);
         }
     };
     
@@ -672,13 +715,28 @@ const Game: React.FC<{ onGameOver: (wave: number, result: 'win' | 'loss') => voi
         playSound('start_wave', 0.4);
         dispatch({ type: 'START_WAVE', payload: { gameMode } });
     }, [playSound, gameMode, dispatch]);
+    
+    const handleBoardClick = () => {
+        if(!placingTower) {
+            dispatch({ type: 'SELECT_TOWER', payload: { towerId: null }});
+        }
+    };
 
     const selectedTowerInstance = state.towers.find(t => t.id === state.selectedTowerId);
     const selectedTowerStats = selectedTowerInstance ? getTowerStats(selectedTowerInstance, costMultiplier) : null;
     
     return (
         <div className="flex w-full h-full bg-black shadow-2xl">
-            <div ref={gameBoardRef} className="relative w-[1200px] h-[800px] bg-black overflow-hidden cursor-crosshair" onMouseMove={handleMouseMove} onClick={handleBoardClick}>
+            <div 
+                ref={gameBoardRef} 
+                className="relative w-[1200px] h-[800px] bg-black overflow-hidden cursor-crosshair" 
+                onMouseMove={handleDragMove}
+                onMouseUp={handleDragEnd}
+                onMouseLeave={() => setPlacingTower(null)}
+                onTouchMove={handleDragMove}
+                onTouchEnd={handleDragEnd}
+                onClick={handleBoardClick}
+            >
                 {currentMap.visual}
 
                 {state.towers.map(tower => <TowerComponent key={tower.id} tower={tower} isSelected={state.selectedTowerId === tower.id} onSelect={handleSelectTowerOnMap} costMultiplier={costMultiplier} />)}
@@ -690,8 +748,8 @@ const Game: React.FC<{ onGameOver: (wave: number, result: 'win' | 'loss') => voi
                 {state.cashPops.map(cp => <CashPop key={cp.id} position={cp.position} amount={cp.amount} />)}
 
                 {placingTower && (
-                    <div className="absolute pointer-events-none" style={{ left: mousePos.x, top: mousePos.y, transform: 'translate(-50%, -50%)', zIndex: 200 }}>
-                        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed ${isPlacementValid(mousePos, placingTower.size) ? 'border-white' : 'border-red-500'} bg-white/20`} style={{ width: TOWER_TYPES[placingTower.id].range * 2, height: TOWER_TYPES[placingTower.id].range * 2 }} />
+                    <div className="absolute pointer-events-none" style={{ left: cursorPos.x, top: cursorPos.y, transform: 'translate(-50%, -50%)', zIndex: 200 }}>
+                        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed ${isPlacementValid(cursorPos, placingTower.size) ? 'border-white' : 'border-red-500'} bg-white/20`} style={{ width: TOWER_TYPES[placingTower.id].range * 2, height: TOWER_TYPES[placingTower.id].range * 2 }} />
                         <div className="opacity-70">{placingTower.visual}</div>
                     </div>
                 )}
@@ -756,13 +814,17 @@ const Game: React.FC<{ onGameOver: (wave: number, result: 'win' | 'loss') => voi
                                     const cost = Math.floor(tower.cost * costMultiplier);
                                     const cantAfford = state.money < cost;
                                     return (
-                                    <button key={tower.id} onClick={() => handleSelectTowerToPlace(tower)} disabled={cantAfford} className={`tower-card flex flex-col items-center p-1 ${cantAfford ? 'tower-card-disabled' : ''}`}>
+                                    <div key={tower.id} 
+                                        onMouseDown={(e) => !cantAfford && handleDragStart(tower, e)}
+                                        onTouchStart={(e) => !cantAfford && handleDragStart(tower, e)}
+                                        className={`tower-card flex flex-col items-center p-2 ${cantAfford ? 'tower-card-disabled' : 'cursor-grab'}`}
+                                    >
                                         <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center p-1">{tower.shop.portrait}</div>
                                         <div className="text-center">
-                                            <p className="font-bold text-sm leading-tight">{tower.name}</p>
-                                            <p className="text-yellow-400 font-semibold text-sm">💰 {cost}</p>
+                                            <p className="font-bold text-md leading-tight">{tower.name}</p>
+                                            <p className="text-yellow-400 font-semibold text-md">💰 {cost}</p>
                                         </div>
-                                    </button>
+                                    </div>
                                 )})}
                             </div>
                         </div>

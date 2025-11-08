@@ -28,7 +28,7 @@ const App: React.FC = () => {
   const [finalWave, setFinalWave] = useState(0);
   const [gameResult, setGameResult] = useState<'win' | 'loss'>('loss');
   const [isMuted, setIsMuted] = useState(false);
-  const gameWrapperRef = useRef<HTMLDivElement>(null);
+  const appContainerRef = useRef<HTMLDivElement>(null);
   
   // Game settings
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
@@ -127,24 +127,22 @@ const App: React.FC = () => {
     setGameStatus('start_screen');
   }, [playSound]);
 
-  const updateGameScale = useCallback(() => {
-    if (gameWrapperRef.current) {
-      const gameWidth = 1200 + 320;
-      const gameHeight = 800;
-      const scaleX = window.innerWidth / gameWidth;
-      const scaleY = window.innerHeight / gameHeight;
+  const updateAppScale = useCallback(() => {
+    if (appContainerRef.current) {
+      const appWidth = 1200 + 320;
+      const appHeight = 800;
+      const scaleX = window.innerWidth / appWidth;
+      const scaleY = window.innerHeight / appHeight;
       const scale = Math.min(scaleX, scaleY, 1);
-      gameWrapperRef.current.style.transform = `scale(${scale})`;
+      appContainerRef.current.style.transform = `scale(${scale})`;
     }
   }, []);
 
   useEffect(() => {
-    if (gameStatus === 'playing') {
-      updateGameScale();
-      window.addEventListener('resize', updateGameScale);
-      return () => window.removeEventListener('resize', updateGameScale);
-    }
-  }, [gameStatus, updateGameScale]);
+      updateAppScale();
+      window.addEventListener('resize', updateAppScale);
+      return () => window.removeEventListener('resize', updateAppScale);
+  }, [updateAppScale]);
 
   useEffect(() => {
     const audioContext = audioContextRef.current;
@@ -191,42 +189,43 @@ const App: React.FC = () => {
   const UnmuteIcon = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>;
 
   const renderContent = () => {
-      if (gameStatus === 'playing') {
-          return (
-              <div 
-                ref={gameWrapperRef} 
-                style={{ 
-                    width: 1200 + 320, 
-                    height: 800,
-                    transformOrigin: 'center center',
-                    transition: 'transform 0.2s ease-out'
-                }}
-              >
-                 <Game 
+      switch (gameStatus) {
+        case 'playing':
+            return (
+                <Game 
                     key={`${difficulty}-${gameMode}-${mapId}-${Date.now()}`} 
                     onGameOver={handleGameOver} 
                     playSound={playSound}
                     difficulty={difficulty}
                     gameMode={gameMode}
                     mapId={mapId}
-                  />
-              </div>
-          );
+                />
+            );
+        case 'start_screen':
+            return (
+                <div className="w-full h-full menu-background flex items-center justify-center">
+                    {[...Array(6)].map((_, i) => <div key={i} className="balloon-bg"></div>)}
+                    <div className="z-10">
+                        <StartScreen onStart={handleStartGame} />
+                    </div>
+                </div>
+            );
+        case 'game_over':
+             return (
+                <div className="w-full h-full menu-background flex items-center justify-center">
+                    {[...Array(6)].map((_, i) => <div key={i} className="balloon-bg"></div>)}
+                    <div className="z-10">
+                       <GameOverScreen wave={finalWave} result={gameResult} onPlayAgain={handlePlayAgain} onMenuReturn={handleReturnToMenu} />
+                    </div>
+                </div>
+            );
+        default:
+            return null;
       }
-
-      return (
-          <div className="w-full h-full menu-background flex items-center justify-center">
-              {[...Array(6)].map((_, i) => <div key={i} className="balloon-bg"></div>)}
-              <div className="z-10">
-                {gameStatus === 'start_screen' && <StartScreen onStart={handleStartGame} />}
-                {gameStatus === 'game_over' && <GameOverScreen wave={finalWave} result={gameResult} onPlayAgain={handlePlayAgain} onMenuReturn={handleReturnToMenu} />}
-              </div>
-          </div>
-      );
   }
 
   return (
-    <div className="w-full h-full font-sans overflow-hidden relative flex items-center justify-center">
+    <div className="w-full h-full font-sans overflow-hidden relative flex items-center justify-center bg-stone-950">
         <button
             onClick={() => setIsMuted(!isMuted)}
             className="absolute top-4 right-4 z-50 p-2 bg-slate-900/50 rounded-full hover:bg-slate-700/80 transition-colors"
@@ -234,7 +233,17 @@ const App: React.FC = () => {
         >
             {isMuted ? <MuteIcon /> : <UnmuteIcon />}
         </button>
-        {renderContent()}
+         <div 
+            ref={appContainerRef} 
+            style={{ 
+                width: 1200 + 320, 
+                height: 800,
+                transformOrigin: 'center center',
+                transition: 'transform 0.2s ease-out'
+            }}
+          >
+            {renderContent()}
+        </div>
     </div>
   );
 };

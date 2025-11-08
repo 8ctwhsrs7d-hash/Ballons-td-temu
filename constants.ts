@@ -25,6 +25,9 @@ const NinjaMonkeyVisual = React.createElement("svg", { width: "48", height: "48"
 const IceMonkeyVisual = React.createElement("svg", { width: "48", height: "48", viewBox: "0 0 48 48", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("path", { d: "M12 30C12 36.6274 17.3726 42 24 42C30.6274 42 36 36.6274 36 30V24H12V30Z", fill: "#60A5FA" }), React.createElement("path", { d: "M12 24V20C12 15.5817 15.5817 12 20 12H28C32.4183 12 36 15.5817 36 20V24H12Z", fill: "#93C5FD" }), React.createElement("path", { d: "M31 28C31 29.6569 29.6569 31 28 31H20C18.3431 31 17 29.6569 17 28V26C17 24.3431 18.3431 23 20 23H28C29.6569 23 31 24.3431 31 26V28Z", fill: "#2563EB" }), React.createElement("rect", { x: "10", y: "10", width: "28", height: "14", rx: "7", fill: "#E0F2FE" }), React.createElement("rect", { x: "8", y: "17", width: "32", height: "8", fill: "#E0F2FE" }), React.createElement("path", { d: "M20 25C19.45 25 19 25.45 19 26C19 26.55 19.45 27 20 27C20.55 27 21 26.55 21 26C21 25.45 20.55 25 20 25Z", fill: "#F9FAFB" }), React.createElement("path", { d: "M28 25C27.45 25 27 25.45 27 26C27 26.55 27.45 27 28 27C28.55 27 29 26.55 29 26C29 25.45 28.55 25 28 25Z", fill: "#F9FAFB" })));
 const GlueGunnerVisual = React.createElement("svg", { width: "56", height: "56", viewBox: "0 0 56 56", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("g", null, React.createElement("path", { d: "M28 48C21.37 48 16 42.63 16 36V35C16 28.37 21.37 23 28 23C34.63 23 40 28.37 40 35V36C40 42.63 34.63 48 28 48Z", fill: "#8C5A2B" }), React.createElement("path", { d: "M35 34C35 35.6569 33.6569 37 32 37H24C22.3431 37 21 35.6569 21 34V32C21 30.3431 22.3431 29 24 29H32C33.6569 29 35 30.3431 35 32V34Z", fill: "#F3EAD3" }), React.createElement("rect", { x: "18", y: "16", width: "20", height: "8", rx: "4", fill: "#16A34A" }), React.createElement("rect", { x: "20", y: "17", width: "16", height: "6", rx: "3", fill: "#6EE7B7" }), React.createElement("path", { d: "M38 18H46L50 20V24L46 26H38V18Z", fill: "#4B5563" }), React.createElement("circle", { cx: "14", cy: "28", r: "8", fill: "#166534" }), React.createElement("circle", { cx: "14", cy: "28", r: "6", fill: "#34D399" })));
 const AlchemistVisual = React.createElement("svg", { width: "56", height: "56", viewBox: "0 0 56 56", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("g", null, React.createElement("path", { d: "M28 48C21.37 48 16 42.63 16 36V35C16 28.37 21.37 23 28 23C34.63 23 40 28.37 40 35V36C40 42.63 34.63 48 28 48Z", fill: "#8C5A2B" }), React.createElement("path", { d: "M35 34C35 35.6569 33.6569 37 32 37H24C22.3431 37 21 35.6569 21 34V32C21 30.3431 22.3431 29 24 29H32C33.6569 29 35 30.3431 35 32V34Z", fill: "#F3EAD3" }), React.createElement("circle", { cx: "22", cy: "32", r: "1.5", fill: "black" }), React.createElement("circle", { cx: "34", cy: "32", r: "1.5", fill: "black" }), React.createElement("circle", { cx: "20", cy: "32", r: "3", fill: "#D1D5DB", stroke: "black" }), React.createElement("circle", { cx: "36", cy: "32", r: "3", fill: "#D1D5DB", stroke: "black" }), React.createElement("path", { d: "M36,10 C38,10 40,12 40,14 L40,20 C40,22 38,24 36,24 L32,24 L32,28 C32,32 28,34 24,34 C20,34 16,32 16,28 L16,24 L12,24 C10,24 8,22 8,20 L8,14 C8,12 10,10 12,10 Z", fill: "#99F6E4" }), React.createElement("path", { d: "M10,12 C12,12 30,12 38,12", stroke: "#2DD4BF", strokeWidth: "2" }), React.createElement("path", { d: "M16,28 C16,24 20,22 24,22 C28,22 32,24 32,28", fill: "#14B8A6" })));
+const SniperMonkeyVisual = React.createElement("svg", { width: "56", height: "56", viewBox: "0 0 56 56", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("g", null, React.createElement("path", { d: "M28 48C21.37 48 16 42.63 16 36V35C16 28.37 21.37 23 28 23C34.63 23 40 28.37 40 35V36C40 42.63 34.63 48 28 48Z", fill: "#166534" }), React.createElement("path", { d: "M35 34C35 35.6569 33.6569 37 32 37H24C22.3431 37 21 35.6569 21 34V32C21 30.3431 22.3431 29 24 29H32C33.6569 29 35 30.3431 35 32V34Z", fill: "#F3EAD3" }), React.createElement("path", { d: "M36 20L54 20L52 24L36 24Z", fill: "#374151" }), React.createElement("rect", { x: "32", y: "24", width: "4", height: "10", fill: "#374151" }), React.createElement("rect", { x: "28", y: "16", width: "12", height: "4", rx: "2", fill: "#4B5563" })));
+const DruidMonkeyVisual = React.createElement("svg", { width: "56", height: "56", viewBox: "0 0 56 56", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("g", null, React.createElement("path", { d: "M28 48C21.37 48 16 42.63 16 36V35C16 28.37 21.37 23 28 23C34.63 23 40 28.37 40 35V36C40 42.63 34.63 48 28 48Z", fill: "#8C5A2B" }), React.createElement("path", { d: "M35 34C35 35.6569 33.6569 37 32 37H24C22.3431 37 21 35.6569 21 34V32C21 30.3431 22.3431 29 24 29H32C33.6569 29 35 30.3431 35 32V34Z", fill: "#F3EAD3" }), React.createElement("path", { d: "M16 26C10 20 10 10 16 6", stroke: "#A67B5B", strokeWidth: "4", strokeLinecap: "round" }), React.createElement("path", { d: "M40 26C46 20 46 10 40 6", stroke: "#A67B5B", strokeWidth: "4", strokeLinecap: "round" }), React.createElement("path", { d: "M38 10L42 28L46 10Z", fill: "#16A34A" }), React.createElement("circle", { cx: "42", cy: "28", r: "3", fill: "#EF4444" })));
+
 
 // --- PROJECTILE VISUALS ---
 const DartVisual = React.createElement("div", { className: "relative w-[8px] h-[28px]" }, React.createElement("div", { style: { width: '100%', height: '100%', background: '#374151', clipPath: 'polygon(50% 0, 100% 80%, 50% 100%, 0 80%)' } }), React.createElement("div", { style: { width: '100%', height: '5px', background: '#9CA3AF', position: 'absolute', bottom: '2px' } }));
@@ -47,6 +50,8 @@ export const PROJECTILE_TYPES: Record<string, ProjectileType> = {
     ice_shard: { id: 'ice_shard', speed: 700, damage: 0, visual: React.createElement("div", { className: "w-3 h-3 bg-cyan-200 rounded-full shadow-[0_0_8px_2px_#67e8f9]" }), pierce: 1, aoeRange: 40, slow: { factor: 0.5, duration: 1500 } },
     glue: { id: 'glue', speed: 500, damage: 0, visual: React.createElement("div", { className: "w-4 h-4 bg-lime-400 rounded-full shadow-[0_0_8px_2px_#a3e635]" }), pierce: 1, slow: { factor: 0.3, duration: 4000 } },
     acid_potion: { id: 'acid_potion', speed: 400, damage: 1, visual: React.createElement("div", { className: "w-5 h-5 rounded-full bg-green-500 flex items-center justify-center" }, React.createElement("div", { className: "w-3 h-3 rounded-full bg-green-300 animate-pulse" })), pierce: 1, aoeRange: 40, canPopLead: true },
+    sniper_bullet: { id: 'sniper_bullet', speed: 2000, damage: 5, visual: React.createElement("div", { className: "w-1 h-3 bg-yellow-300 rounded-full" }), pierce: 2, canPopLead: true },
+    thorn: { id: 'thorn', speed: 0, damage: 1, visual: React.createElement("div", { className: "w-6 h-6 text-green-500" }, React.createElement("svg", { viewBox: "0 0 24 24", fill: "currentColor" }, React.createElement("path", { d: "M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" }))), pierce: 5, isStationary: true, duration: 5000 },
 };
 
 // TOWERS
@@ -111,6 +116,21 @@ export const TOWER_TYPES: Record<string, TowerType> = {
             ]
         ]
     },
+     sniper_monkey: {
+        id: 'sniper_monkey', name: 'Sniper Monkey', cost: 350, range: 9999, fireRate: 0.5, projectile: PROJECTILE_TYPES.sniper_bullet, size: 25,
+        visual: SniperMonkeyVisual,
+        shop: { portrait: SniperMonkeyVisual, description: "Shoots single, powerful darts at long range." },
+        upgrades: [
+            [
+                { name: 'Full Metal Jacket', cost: 250, description: 'Shots can pop Lead and do more damage.', effects: { projectile: { damage: 10 } } },
+                { name: 'Large Calibre', cost: 500, description: 'Shots do massive damage.', effects: { projectile: { damage: 25 } } },
+            ],
+            [
+                { name: 'Fast Firing', cost: 300, description: 'Increases attack speed.', effects: { fireRate: 0.8 } },
+                { name: 'Semi-Automatic', cost: 600, description: 'Fires very rapidly.', effects: { fireRate: 1.5 } },
+            ]
+        ]
+    },
     ice_monkey: {
         id: 'ice_monkey', name: 'Ice Monkey', cost: 450, range: 120, fireRate: 0.8, projectile: PROJECTILE_TYPES.ice_shard, size: 30,
         visual: IceMonkeyVisual,
@@ -153,6 +173,21 @@ export const TOWER_TYPES: Record<string, TowerType> = {
             [
                 { name: 'Faster Throwing', cost: 350, description: 'Throws potions faster.', effects: { fireRate: 1.2 } },
                 { name: 'Unstable Concoction', cost: 600, description: 'Potions are more damaging.', effects: { projectile: { damage: 3 } } },
+            ]
+        ]
+    },
+    druid: {
+        id: 'druid', name: 'Druid', cost: 400, range: 170, fireRate: 0.6, projectile: PROJECTILE_TYPES.thorn, size: 25,
+        visual: DruidMonkeyVisual,
+        shop: { portrait: DruidMonkeyVisual, description: "Summons thorn patches on the track." },
+        upgrades: [
+            [
+                { name: 'Heart of Vengeance', cost: 250, description: 'Attacks faster as lives are lost.', effects: { /* Handled in code */ } },
+                { name: 'Druid of the Jungle', cost: 450, description: 'Thorns last longer.', effects: { projectile: { duration: 8000 } } },
+            ],
+            [
+                { name: 'Hard Thorns', cost: 300, description: 'Thorns can pop more bloons.', effects: { projectile: { pierce: 10 } } },
+                { name: 'Heart of Thunder', cost: 600, description: 'Summons lightning strikes.', effects: { /* Handled in code */ } },
             ]
         ]
     },

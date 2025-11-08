@@ -42,6 +42,8 @@ export interface ProjectileType {
     slow?: { factor: number; duration: number };
     pierce?: number;
     canPopLead?: boolean;
+    isStationary?: boolean;
+    duration?: number;
 }
 
 export interface BalloonType {
@@ -91,6 +93,7 @@ export interface ProjectileInstance {
   distanceTraveled: number;
   pierceLeft: number;
   hitBalloonIds: string[];
+  createdAt: number;
 }
 
 export interface PopAnimationInstance {
