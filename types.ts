@@ -26,6 +26,10 @@ export interface TowerType {
   projectile: ProjectileType;
   size: number; // radius for placement
   visual: React.ReactNode;
+  shop: {
+      portrait: React.ReactNode;
+      description: string;
+  }
   upgrades: [UpgradePath, UpgradePath];
 }
 
@@ -95,11 +99,25 @@ export interface PopAnimationInstance {
     createdAt: number;
 }
 
+export interface CashPopInstance {
+    id: string;
+    position: Vector2D;
+    amount: number;
+    createdAt: number;
+}
+
 export interface ExplosionInstance {
     id:string;
     position: Vector2D;
     radius: number;
     createdAt: number;
+}
+
+export interface MuzzleFlashInstance {
+    id: string;
+    position: Vector2D;
+    createdAt: number;
+    angle: number;
 }
 
 export type GameStatus = 'start_screen' | 'playing' | 'game_over';
@@ -112,3 +130,21 @@ export type Wave = {
     count: number;
     spawnDelay: number; // ms between each balloon
 }[];
+
+export type MapId = 'green_meadow' | 'candy_canyon' | 'volcanic_pass';
+
+export interface UnplaceableArea {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
+export interface MapData {
+    id: MapId;
+    name: string;
+    path: Vector2D[];
+    visual: React.ReactNode;
+    thumbnail: React.ReactNode;
+    unplaceableAreas?: UnplaceableArea[];
+}

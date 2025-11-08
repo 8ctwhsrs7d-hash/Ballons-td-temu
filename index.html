@@ -22,11 +22,250 @@
 }
 </script>
 <style>
+    html, body, #root {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
     body {
         font-family: 'Nunito', sans-serif;
+        background-color: #0c0a09;
     }
     .font-bangers {
         font-family: 'Bangers', cursive;
+    }
+    /* Custom Scrollbar for UI Panel */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #1e293b;
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #475569;
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+    }
+
+    /* Game Board Background */
+    .grass-background {
+       background-color: #65a30d;
+       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23528c3a' fill-opacity='0.4'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0h1v5h4v1H6v4H5V6H0V5h5z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Side Panel Background */
+    .ui-panel {
+        background-color: #404040;
+        background-image: linear-gradient(0deg, #404040 0%, #525252 100%);
+        border-left: 4px solid #171717;
+    }
+    .ui-panel-header {
+      background: linear-gradient(to right, #262626, #404040, #262626);
+      border-top: 2px solid #737373;
+      border-bottom: 2px solid #171717;
+      text-shadow: 2px 2px 2px #000;
+    }
+
+    /* Floating Balloons Background for Menus */
+    .menu-background {
+      position: relative;
+      overflow: hidden;
+    }
+    .balloon-bg {
+        position: absolute;
+        bottom: -150px;
+        background-color: rgba(239, 68, 68, 0.7);
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        animation: float 25s ease-in-out infinite;
+    }
+    .balloon-bg:before {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 15px solid rgba(239, 68, 68, 0.7);
+    }
+    .balloon-bg:nth-child(1) { width: 80px; height: 95px; left: 10%; animation-duration: 15s; animation-delay: 0s; background-color: rgba(59, 130, 246, 0.7); }
+    .balloon-bg:nth-child(2) { width: 100px; height: 120px; left: 20%; animation-duration: 20s; animation-delay: 2s; background-color: rgba(34, 197, 94, 0.7); }
+    .balloon-bg:nth-child(3) { width: 60px; height: 70px; left: 35%; animation-duration: 22s; animation-delay: 5s; background-color: rgba(250, 204, 21, 0.7); }
+    .balloon-bg:nth-child(4) { width: 90px; height: 105px; left: 55%; animation-duration: 18s; animation-delay: 1s; background-color: rgba(244, 114, 182, 0.7); }
+    .balloon-bg:nth-child(5) { width: 50px; height: 60px; left: 75%; animation-duration: 25s; animation-delay: 3s; background-color: rgba(17, 24, 39, 0.7); }
+    .balloon-bg:nth-child(6) { width: 110px; height: 130px; left: 85%; animation-duration: 16s; animation-delay: 0s; background-color: rgba(249, 250, 251, 0.7); }
+    
+    @keyframes float {
+        0% { bottom: -150px; transform: translateX(0); }
+        50% { transform: translateX(20px); }
+        100% { bottom: 100vh; transform: translateX(-20px); }
+    }
+
+    /* Game Buttons */
+    .game-button {
+        position: relative;
+        font-family: 'Bangers', cursive;
+        color: white;
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.4);
+        border-radius: 0.5rem;
+        border: 2px solid #171717;
+        box-shadow: inset 0 2px 0 rgba(255,255,255,0.4), 0 4px 6px rgba(0,0,0,0.2);
+        transition: all 0.1s ease-in-out;
+    }
+    .game-button:active {
+        transform: translateY(2px);
+        box-shadow: inset 0 2px 0 rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .game-button.green { background-color: #16a34a; }
+    .game-button.green:hover:not(:disabled) { background-color: #15803d; }
+    .game-button.red { background-color: #dc2626; }
+    .game-button.red:hover:not(:disabled) { background-color: #b91c1c; }
+    .game-button.gray { background-color: #6b7280; }
+    .game-button.gray:hover:not(:disabled) { background-color: #4b5563; }
+    .game-button:disabled {
+        background-color: #4b5563;
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    .stat-counter {
+        transition: transform 0.15s ease-out;
+    }
+    .stat-counter-pop {
+        transform: scale(1.15);
+    }
+
+    /* Tower Shop Card */
+    .tower-card {
+      background: linear-gradient(to bottom, #4b5563, #374151);
+      border: 2px solid;
+      border-color: #6b7280 #374151 #1f2937 #4b5563;
+      border-radius: 8px;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.3);
+      transition: all 0.15s ease-out;
+    }
+    .tower-card:hover {
+      transform: translateY(-2px);
+      border-color: #818cf8 #4f46e5 #312e81 #6366f1;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .tower-card-disabled {
+      filter: grayscale(80%);
+      opacity: 0.6;
+      background: #374151;
+    }
+
+    /* Upgrade Panel */
+    .upgrade-button {
+      background: #374151;
+      border: 2px solid #4b5563;
+      transition: all 0.15s ease-out;
+    }
+    .upgrade-button:not(:disabled):hover {
+      background: #4b5563;
+      border-color: #6b7280;
+    }
+    .upgrade-button-purchased {
+      background: #ca8a04;
+      border-color: #facc15;
+    }
+    .upgrade-button-unavailable {
+       filter: grayscale(50%);
+       opacity: 0.5;
+    }
+
+    /* Animations */
+    @keyframes cash-pop {
+      0% { transform: translateY(0) scale(0.8); opacity: 1; }
+      100% { transform: translateY(-30px) scale(1.2); opacity: 0; }
+    }
+    .cash-pop {
+      position: absolute;
+      animation: cash-pop 0.7s ease-out forwards;
+      text-shadow: 1px 1px 2px black;
+      font-weight: bold;
+    }
+
+    @keyframes balloon-bob {
+      0%, 100% { transform: translate(-50%, -52%); }
+      50% { transform: translate(-50%, -48%); }
+    }
+    .animate-balloon-bob {
+        animation: balloon-bob 2s ease-in-out infinite;
+    }
+
+    .shuriken-spin {
+        animation: projectile-spin 0.2s linear infinite;
+    }
+    @keyframes projectile-spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .pop-particle {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: white;
+        border-radius: 50%;
+        pointer-events: none;
+        animation: pop-particle-anim 0.4s forwards;
+    }
+    @keyframes pop-particle-anim {
+        from {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+        }
+        to {
+            transform: translate(calc(cos(var(--i) * 72deg) * 25px), calc(sin(var(--i) * 72deg) * 25px)) scale(0);
+            opacity: 0;
+        }
+    }
+    
+    .explosion-core {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(253,224,71,1) 30%, rgba(251,191,36,0) 70%);
+        animation: explosion-core-anim 0.3s forwards;
+    }
+    @keyframes explosion-core-anim {
+        0% { transform: translate(-50%,-50%) scale(0); opacity: 1; }
+        50% { transform: translate(-50%,-50%) scale(1.2); opacity: 0.8; }
+        100% { transform: translate(-50%,-50%) scale(1); opacity: 0; }
+    }
+
+    .explosion-shockwave {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 4px solid rgba(251, 191, 36, 0.8);
+        animation: explosion-shockwave-anim 0.4s forwards;
+    }
+    @keyframes explosion-shockwave-anim {
+        0% { transform: translate(-50%,-50%) scale(0); opacity: 1; border-width: 8px; }
+        100% { transform: translate(-50%,-50%) scale(1); opacity: 0; border-width: 0px; }
+    }
+
+    .muzzle-flash {
+        width: 20px;
+        height: 20px;
+        background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(252,239,138,1) 40%, rgba(251,191,36,0) 70%);
+        border-radius: 50%;
+        animation: muzzle-flash-anim 0.1s forwards;
+    }
+    @keyframes muzzle-flash-anim {
+        from { transform: scale(1.5); opacity: 1; }
+        to { transform: scale(0); opacity: 0; }
     }
 </style>
 </head>

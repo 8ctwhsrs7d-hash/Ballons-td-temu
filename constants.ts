@@ -1,5 +1,5 @@
 
-import type { TowerType, BalloonType, Wave, Vector2D, ProjectileType, Difficulty } from './types';
+import type { TowerType, BalloonType, Wave, Vector2D, ProjectileType, Difficulty, MapData, MapId } from './types';
 import React from 'react';
 
 // GAME CONFIG
@@ -12,54 +12,49 @@ export const DIFFICULTY_SETTINGS: Record<Difficulty, { initialMoney: number; ini
     'ultra nightmare': { initialMoney: 300, initialHealth: 50, towerCostMultiplier: 1.25 }
 };
 
-// VISUALS
-const DartMonkeyVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-yellow-900 rounded-full" }), React.createElement('div', { className: "absolute w-7 h-7 bg-orange-200 rounded-full -translate-y-1" }), React.createElement('div', { className: "absolute w-2 h-2 bg-black rounded-full -translate-x-2 -translate-y-1" }), React.createElement('div', { className: "absolute w-2 h-2 bg-black rounded-full translate-x-2 -translate-y-1" }));
-const TackShooterVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-10 h-10 bg-gray-600 rounded-md" }), [...Array(8)].map((_, i) => React.createElement('div', { key: i, className: "absolute w-2 h-4 bg-gray-800", style: { transform: `rotate(${i * 45}deg) translateY(-1.25rem)` } })));
-const IceMonkeyVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-blue-300 rounded-full" }), React.createElement('div', { className: "absolute w-7 h-7 bg-white rounded-full -translate-y-1" }), React.createElement('div', { className: "absolute w-2 h-2 bg-black rounded-full -translate-x-2 -translate-y-1" }), React.createElement('div', { className: "absolute w-2 h-2 bg-black rounded-full translate-x-2 -translate-y-1" }));
-const BombShooterVisual = React.createElement('div', { className: "relative w-14 h-14 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-10 h-10 bg-gray-900 rounded-full" }), React.createElement('div', { className: "absolute w-4 h-8 bg-gray-700 -translate-y-4 rounded-t-md border-2 border-b-0 border-gray-600" }));
-const SuperMonkeyVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-10 h-10 bg-red-600 rounded-b-full rotate-12" }), React.createElement('div', { className: "absolute w-8 h-8 bg-blue-800 rounded-full" }), React.createElement('div', { className: "absolute w-7 h-7 bg-orange-200 rounded-full -translate-y-1" }), React.createElement('div', { className: "absolute w-2 h-3 bg-yellow-300 rounded-full -translate-x-2 -translate-y-0.5 border border-black" }), React.createElement('div', { className: "absolute w-2 h-3 bg-yellow-300 rounded-full translate-x-2 -translate-y-0.5 border border-black" }));
-const SniperMonkeyVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-green-900 rounded-full" }), React.createElement('div', { className: "absolute w-2 h-12 bg-gray-800 border-2 border-gray-900 rounded-sm" }));
-const GlueGunnerVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-yellow-900 rounded-full" }), React.createElement('div', { className: "absolute w-4 h-8 bg-lime-500 -translate-y-2 rounded-md border-2 border-gray-900" }), React.createElement('div', { className: "absolute w-8 h-8 border-4 border-lime-700 rounded-full -translate-y-3" }));
-const NinjaMonkeyVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-gray-800 rounded-full" }), React.createElement('div', { className: "absolute w-9 h-3 bg-red-600 -translate-y-1" }), React.createElement('div', { className: "absolute w-2 h-2 bg-white rounded-full -translate-x-2 -translate-y-1" }), React.createElement('div', { className: "absolute w-2 h-2 bg-white rounded-full translate-x-2 -translate-y-1" }));
-const AlchemistVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-purple-900 rounded-full" }), React.createElement('div', { className: "absolute w-4 h-6 bg-green-400/50 border-2 border-green-300 rounded-t-full rounded-b-lg -translate-y-2" }));
-const DruidVisual = React.createElement('div', { className: "relative w-12 h-12 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-8 h-8 bg-green-800 rounded-full" }), React.createElement('div', { className: "absolute w-2 h-4 bg-yellow-900 -translate-x-3 -translate-y-4 rotate-[-30deg] rounded-sm" }), React.createElement('div', { className: "absolute w-2 h-4 bg-yellow-900 translate-x-3 -translate-y-4 rotate-[30deg] rounded-sm" }));
-const MortarTowerVisual = React.createElement('div', { className: "relative w-14 h-14 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-10 h-10 bg-gray-700 rounded-full" }), React.createElement('div', { className: "absolute w-6 h-10 bg-gray-900 -translate-y-2 border-4 border-gray-600 rounded-t-md" }));
-const SpikeFactoryVisual = React.createElement('div', { className: "relative w-14 h-14 flex items-center justify-center" }, React.createElement('div', { className: "absolute w-12 h-12 bg-orange-700 rounded-md" }), React.createElement('div', { className: "absolute w-3 h-3 bg-gray-400 rotate-45 -translate-x-4" }), React.createElement('div', { className: "absolute w-3 h-3 bg-gray-400 rotate-45 translate-x-4" }), React.createElement('div', { className: "absolute w-3 h-3 bg-gray-400 rotate-45 -translate-y-4" }), React.createElement('div', { className: "absolute w-3 h-3 bg-gray-400 rotate-45 translate-y-4" }));
-const MOABVisual = React.createElement('div', { className: "relative w-full h-full" }, React.createElement('div', { className: "absolute w-full h-full bg-blue-800 rounded-full" }), React.createElement('div', { className: "absolute w-[90%] h-[90%] left-[5%] top-[5%] bg-blue-900 rounded-full" }), React.createElement('div', { className: "absolute w-full h-1/2 bg-white/20 top-0 rounded-t-full" }), React.createElement('div', { className: "absolute top-1/2 -translate-y-1/2 left-1/4 text-white font-black text-2xl -rotate-12" }, "MOAB"));
+// ==================================================================
+// PROFESSIONAL VISUAL ASSETS
+// ==================================================================
 
-const DartVisual = React.createElement('div', { className: 'w-1 h-4 bg-gray-700 rounded-full rotate-45' });
-const TackVisual = React.createElement('div', { className: 'w-0.5 h-3 bg-gray-500' });
-const IceShardVisual = React.createElement('div', { className: 'w-2 h-2 bg-cyan-200 rotate-45' });
-const BombVisual = React.createElement('div', { className: "w-4 h-4 bg-black rounded-full border-2 border-gray-600" });
-const PlasmaVisual = React.createElement('div', { className: 'w-2 h-4 bg-pink-500 rounded-full shadow-[0_0_8px_2px_#ec4899]' });
-const BulletVisual = React.createElement('div', { className: 'w-1 h-3 bg-yellow-300' });
-const GlueGlobVisual = React.createElement('div', { className: 'w-3 h-3 bg-lime-500 rounded-full opacity-75' });
-const ShurikenVisual = React.createElement('div', { className: "relative w-4 h-4" }, React.createElement('div', { className: 'absolute w-1 h-4 bg-gray-500 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' }), React.createElement('div', { className: 'absolute w-4 h-1 bg-gray-500 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' }));
-const AcidPotionVisual = React.createElement('div', { className: "w-4 h-5 bg-green-500/70 rounded-t-full rounded-b-md border-2 border-green-300" });
-const ThornVisual = React.createElement('div', { className: 'w-1 h-5 bg-green-700' });
-const MortarShellVisual = React.createElement('div', { className: "w-5 h-5 bg-gray-800 rounded-full" }, React.createElement('div', { className: "w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[15px] border-b-red-500 -translate-y-2" }));
-const SpikeVisual = React.createElement('div', { className: 'w-1 h-4 bg-gray-400' });
+// --- TOWER VISUALS ---
+const DartMonkeyVisual = React.createElement("svg", { width: "48", height: "48", viewBox: "0 0 48 48", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("g", { clipPath: "url(#clip_dart)" }, React.createElement("path", { d: "M24 42C17.37 42 12 36.63 12 30V29C12 22.37 17.37 17 24 17C30.63 17 36 22.37 36 29V30C36 36.63 30.63 42 24 42Z", fill: "#8C5A2B" }), React.createElement("path", { d: "M24 17C17.37 17 12 22.37 12 29V30C12 29.5 12.5 29 13 29H35C35.5 29 36 29.5 36 30V29C36 22.37 30.63 17 24 17Z", fill: "#A67B5B" }), React.createElement("path", { d: "M31 28C31 29.89 30.05 31.6 28.53 32.5C28.2 30.58 26.3 29 24 29C21.7 29 19.8 30.58 19.47 32.5C17.95 31.6 17 29.89 17 28C17 24.13 20.13 21 24 21C27.87 21 31 24.13 31 28Z", fill: "#F3EAD3" }), React.createElement("path", { d: "M20 25C19.45 25 19 25.45 19 26C19 26.55 19.45 27 20 27C20.55 27 21 26.55 21 26C21 25.45 20.55 25 20 25Z", fill: "#111827" }), React.createElement("path", { d: "M28 25C27.45 25 27 25.45 27 26C27 26.55 27.45 27 28 27C28.55 27 29 26.55 29 26C29 25.45 28.55 25 28 25Z", fill: "#111827" }), React.createElement("path", { d: "M24 33C25.1 33 26 32.1 26 31H22C22 32.1 22.9 33 24 33Z", fill: "#111827" })), React.createElement("defs", null, React.createElement("clipPath", { id: "clip_dart" }, React.createElement("rect", { width: "48", height: "48", fill: "white" }))));
+const TackShooterVisual = React.createElement("svg", { width: "48", height: "48", viewBox: "0 0 48 48", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("g", null, React.createElement("rect", { x: "10", y: "10", width: "28", height: "28", rx: "6", fill: "#4B5563", stroke: "#1F2937", strokeWidth: "2" }), React.createElement("rect", { x: "12", y: "12", width: "24", height: "24", rx: "4", fill: "#6B7280" }), React.createElement("circle", { cx: "24", cy: "24", r: "5", fill: "#374151" }), ...[...Array(8)].map((_, i) => React.createElement("g", { key: i, transform: `rotate(${i * 45} 24 24)` }, React.createElement("path", { d: "M22,4 L26,4 L26,14 L22,14 Z", fill: "#4B5563" }), React.createElement("path", { d: "M22.5,4.5 L25.5,4.5 L25.5,6.5 L22.5,6.5 Z", fill: "#9CA3AF" })))));
+const SuperMonkeyVisual = React.createElement("svg", { width: "48", height: "48", viewBox: "0 0 48 48", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("path", { d: "M11 20L24 10L37 20V32C37 36.4183 31.1797 40 24 40C16.8203 40 11 36.4183 11 32V20Z", fill: "#1E3A8A" }), React.createElement("path", { d: "M12 21L24 30L36 21L24 12L12 21Z", fill: "#2563EB" }), React.createElement("path", { d: "M14 30C14 34 18.4772 37 24 37C29.5228 37 34 34 34 30V24L24 32L14 24V30Z", fill: "#3B82F6" }), React.createElement("path", { d: "M11 20L6 16L24 4L42 16L37 20", fill: "#DC2626" }), React.createElement("path", { d: "M6 16L11 32H37L42 16", fill: "#B91C1C" }), React.createElement("path", { d: "M24,4 L26,7 L24,8 L22,7 Z", fill: "yellow" }));
+const BombShooterVisual = React.createElement("svg", { width: "56", height: "56", viewBox: "0 0 56 56", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("g", null, React.createElement("circle", { cx: "28", cy: "28", r: "20", fill: "#1F2937" }), React.createElement("circle", { cx: "28", cy: "28", r: "18", fill: "#374151", stroke: "#4B5563", strokeWidth: "2" }), React.createElement("path", { d: "M22 28V12C22 10.8954 22.8954 10 24 10H32C33.1046 10 34 10.8954 34 12V28H22Z", fill: "#111827", stroke: "#4B5563", strokeWidth: "2" }), React.createElement("path", { d: "M24 10H32C33.1 10 34 11 34 12V14H22V12C22 11 22.9 10 24 10Z", fill: "#4B5563" })));
+const NinjaMonkeyVisual = React.createElement("svg", { width: "48", height: "48", viewBox: "0 0 48 48", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("g", null, React.createElement("path", { d: "M24 42C17.37 42 12 36.63 12 30V29C12 22.37 17.37 17 24 17C30.63 17 36 22.37 36 29V30C36 36.63 30.63 42 24 42Z", fill: "#374151" }), React.createElement("path", { d: "M24 17C17.37 17 12 22.37 12 29V30C12 29.5 12.5 29 13 29H35C35.5 29 36 29.5 36 30V29C36 22.37 30.63 17 24 17Z", fill: "#4B5563" }), React.createElement("path", { d: "M31 28C31 29.89 30.05 31.6 28.53 32.5C28.2 30.58 26.3 29 24 29C21.7 29 19.8 30.58 19.47 32.5C17.95 31.6 17 29.89 17 28C17 24.13 20.13 21 24 21C27.87 21 31 24.13 31 28Z", fill: "#1F2937" }), React.createElement("rect", { x: "15", y: "24", width: "18", height: "4", fill: "#DC2626" }), React.createElement("rect", { x: "17", y: "25", width: "14", height: "2", fill: "#F87171" })));
+const IceMonkeyVisual = React.createElement("svg", { width: "48", height: "48", viewBox: "0 0 48 48", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("path", { d: "M12 30C12 36.6274 17.3726 42 24 42C30.6274 42 36 36.6274 36 30V24H12V30Z", fill: "#60A5FA" }), React.createElement("path", { d: "M12 24V20C12 15.5817 15.5817 12 20 12H28C32.4183 12 36 15.5817 36 20V24H12Z", fill: "#93C5FD" }), React.createElement("path", { d: "M31 28C31 29.6569 29.6569 31 28 31H20C18.3431 31 17 29.6569 17 28V26C17 24.3431 18.3431 23 20 23H28C29.6569 23 31 24.3431 31 26V28Z", fill: "#2563EB" }), React.createElement("rect", { x: "10", y: "10", width: "28", height: "14", rx: "7", fill: "#E0F2FE" }), React.createElement("rect", { x: "8", y: "17", width: "32", height: "8", fill: "#E0F2FE" }), React.createElement("path", { d: "M20 25C19.45 25 19 25.45 19 26C19 26.55 19.45 27 20 27C20.55 27 21 26.55 21 26C21 25.45 20.55 25 20 25Z", fill: "#F9FAFB" }), React.createElement("path", { d: "M28 25C27.45 25 27 25.45 27 26C27 26.55 27.45 27 28 27C28.55 27 29 26.55 29 26C29 25.45 28.55 25 28 25Z", fill: "#F9FAFB" })));
+const GlueGunnerVisual = React.createElement("svg", { width: "56", height: "56", viewBox: "0 0 56 56", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("g", null, React.createElement("path", { d: "M28 48C21.37 48 16 42.63 16 36V35C16 28.37 21.37 23 28 23C34.63 23 40 28.37 40 35V36C40 42.63 34.63 48 28 48Z", fill: "#8C5A2B" }), React.createElement("path", { d: "M35 34C35 35.6569 33.6569 37 32 37H24C22.3431 37 21 35.6569 21 34V32C21 30.3431 22.3431 29 24 29H32C33.6569 29 35 30.3431 35 32V34Z", fill: "#F3EAD3" }), React.createElement("rect", { x: "18", y: "16", width: "20", height: "8", rx: "4", fill: "#16A34A" }), React.createElement("rect", { x: "20", y: "17", width: "16", height: "6", rx: "3", fill: "#6EE7B7" }), React.createElement("path", { d: "M38 18H46L50 20V24L46 26H38V18Z", fill: "#4B5563" }), React.createElement("circle", { cx: "14", cy: "28", r: "8", fill: "#166534" }), React.createElement("circle", { cx: "14", cy: "28", r: "6", fill: "#34D399" })));
+const AlchemistVisual = React.createElement("svg", { width: "56", height: "56", viewBox: "0 0 56 56", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, React.createElement("g", null, React.createElement("path", { d: "M28 48C21.37 48 16 42.63 16 36V35C16 28.37 21.37 23 28 23C34.63 23 40 28.37 40 35V36C40 42.63 34.63 48 28 48Z", fill: "#8C5A2B" }), React.createElement("path", { d: "M35 34C35 35.6569 33.6569 37 32 37H24C22.3431 37 21 35.6569 21 34V32C21 30.3431 22.3431 29 24 29H32C33.6569 29 35 30.3431 35 32V34Z", fill: "#F3EAD3" }), React.createElement("circle", { cx: "22", cy: "32", r: "1.5", fill: "black" }), React.createElement("circle", { cx: "34", cy: "32", r: "1.5", fill: "black" }), React.createElement("circle", { cx: "20", cy: "32", r: "3", fill: "#D1D5DB", stroke: "black" }), React.createElement("circle", { cx: "36", cy: "32", r: "3", fill: "#D1D5DB", stroke: "black" }), React.createElement("path", { d: "M36,10 C38,10 40,12 40,14 L40,20 C40,22 38,24 36,24 L32,24 L32,28 C32,32 28,34 24,34 C20,34 16,32 16,28 L16,24 L12,24 C10,24 8,22 8,20 L8,14 C8,12 10,10 12,10 Z", fill: "#99F6E4" }), React.createElement("path", { d: "M10,12 C12,12 30,12 38,12", stroke: "#2DD4BF", strokeWidth: "2" }), React.createElement("path", { d: "M16,28 C16,24 20,22 24,22 C28,22 32,24 32,28", fill: "#14B8A6" })));
+
+// --- PROJECTILE VISUALS ---
+const DartVisual = React.createElement("div", { className: "relative w-[8px] h-[28px]" }, React.createElement("div", { style: { width: '100%', height: '100%', background: '#374151', clipPath: 'polygon(50% 0, 100% 80%, 50% 100%, 0 80%)' } }), React.createElement("div", { style: { width: '100%', height: '5px', background: '#9CA3AF', position: 'absolute', bottom: '2px' } }));
+const TackVisual = React.createElement("div", { style: { width: '6px', height: '18px', background: 'linear-gradient(to top, #6B7280, #D1D5DB)', clipPath: 'polygon(50% 0, 100% 100%, 0 100%)' } });
+const BombVisual = React.createElement("div", { className: "w-4 h-4 bg-gray-900 rounded-full border-2 border-gray-600 relative shadow-md" }, React.createElement("div", { className: "absolute -top-1.5 left-1/2 w-1 h-2 bg-gray-400 transform -translate-x-1/2" }), React.createElement("div", { className: "absolute top-1 left-1 w-1 h-2 bg-white/50 rounded-full transform rotate-45" }));
+const PlasmaVisual = React.createElement("div", { className: "w-4 h-4 bg-pink-400 rounded-full shadow-[0_0_10px_4px_#ec4899] border-2 border-white/80" });
+
+// --- BALLOON VISUALS ---
+const RedBalloonVisual = React.createElement("svg", { viewBox: "0 0 100 120", className: "w-full h-full" }, React.createElement("defs", null, React.createElement("radialGradient", { id: "grad_red", cx: "30%", cy: "30%", r: "80%", fx: "35%", fy: "25%" }, React.createElement("stop", { offset: "0%", style: { stopColor: "#F87171" } }), React.createElement("stop", { offset: "100%", style: { stopColor: "#B91C1C" } }))), React.createElement("path", { d: "M 50,110 C 20,110 0,85 0,55 C 0,25 25,0 50,0 C 75,0 100,25 100,55 C 100,85 80,110 50,110 Z", fill: "url(#grad_red)" }), React.createElement("path", { d: "M 45,108 L 50,118 L 55,108 Z", fill: "#B91C1C" }), React.createElement("path", { d: "M 30,30 C 40,20 60,20 70,35 C 65,25 45,25 30,30 Z", fill: "rgba(255,255,255,0.4)", transform: "rotate(10 50 50)" }));
+const BlueBalloonVisual = React.createElement("svg", { viewBox: "0 0 100 120", className: "w-full h-full" }, React.createElement("defs", null, React.createElement("radialGradient", { id: "grad_blue", cx: "30%", cy: "30%", r: "80%", fx: "35%", fy: "25%" }, React.createElement("stop", { offset: "0%", style: { stopColor: "#93C5FD" } }), React.createElement("stop", { offset: "100%", style: { stopColor: "#2563EB" } }))), React.createElement("path", { d: "M 50,110 C 20,110 0,85 0,55 C 0,25 25,0 50,0 C 75,0 100,25 100,55 C 100,85 80,110 50,110 Z", fill: "url(#grad_blue)" }), React.createElement("path", { d: "M 45,108 L 50,118 L 55,108 Z", fill: "#2563EB" }), React.createElement("path", { d: "M 30,30 C 40,20 60,20 70,35 C 65,25 45,25 30,30 Z", fill: "rgba(255,255,255,0.4)", transform: "rotate(10 50 50)" }));
+const MOABVisual = React.createElement("svg", { viewBox: "0 0 160 80", className: "w-full h-full" }, React.createElement("defs", null, React.createElement("linearGradient", { id: "grad_moab_body", x1: "0", y1: "0", x2: "0", y2: "1" }, React.createElement("stop", { offset: "0%", stopColor: "#60A5FA" }), React.createElement("stop", { offset: "100%", stopColor: "#1E40AF" })), React.createElement("linearGradient", { id: "grad_moab_fin", x1: "0", y1: "0", x2: "0", y2: "1" }, React.createElement("stop", { offset: "0%", stopColor: "#E2E8F0" }), React.createElement("stop", { offset: "100%", stopColor: "#94A3B8" }))), React.createElement("path", { d: "M 15,40 A 65 35 0 0 1 145,40 A 65 35 0 0 1 15,40 Z", fill: "url(#grad_moab_body)", stroke: "#0F172A", strokeWidth: "2" }), React.createElement("path", { d: "M 15,40 A 65 35 0 0 0 145,40 L 145,35 A 65 30 0 0 0 15,35 Z", fill: "rgba(255,255,255,0.3)" }), React.createElement("path", { d: "M 145,35 L 160,25 L 160,55 L 145,45 Z", fill: "url(#grad_moab_fin)", stroke: "#475569", strokeWidth: "1" }), React.createElement("path", { d: "M 15,35 L 0,25 L 0,55 L 15,45 Z", fill: "url(#grad_moab_fin)", stroke: "#475569", strokeWidth: "1" }), React.createElement("text", { x: "80", y: "55", textAnchor: "middle", fill: "white", fontSize: "28", fontFamily: "Bangers", stroke: "black", strokeWidth: "1", letterSpacing: "0.1em" }, "MOAB"));
 
 // PROJECTILES
 export const PROJECTILE_TYPES: Record<string, ProjectileType> = {
     dart: { id: 'dart', speed: 800, damage: 1, visual: DartVisual, pierce: 2 },
     tack: { id: 'tack', speed: 600, damage: 1, visual: TackVisual, pierce: 1 },
-    ice_shard: { id: 'ice_shard', speed: 700, damage: 0, visual: IceShardVisual, pierce: 1, slow: { factor: 0.6, duration: 1500 } },
     bomb: { id: 'bomb', speed: 400, damage: 2, visual: BombVisual, pierce: 1, aoeRange: 50, canPopLead: true },
     plasma: { id: 'plasma', speed: 1000, damage: 1, visual: PlasmaVisual, pierce: 2, canPopLead: true },
-    bullet: { id: 'bullet', speed: 2500, damage: 5, visual: BulletVisual, pierce: 1 },
-    glue: { id: 'glue', speed: 500, damage: 0, visual: GlueGlobVisual, pierce: 1, slow: { factor: 0.4, duration: 4000 } },
-    shuriken: { id: 'shuriken', speed: 900, damage: 1, visual: ShurikenVisual, pierce: 3 },
-    acid_potion: { id: 'acid_potion', speed: 400, damage: 1, visual: AcidPotionVisual, pierce: 1, aoeRange: 40, canPopLead: true },
-    thorn: { id: 'thorn', speed: 800, damage: 1, visual: ThornVisual, pierce: 5 },
-    mortar_shell: { id: 'mortar_shell', speed: 300, damage: 2, visual: MortarShellVisual, pierce: 1, aoeRange: 80, canPopLead: true },
-    spike: { id: 'spike', speed: 1000, damage: 1, visual: SpikeVisual, pierce: 10 },
+    shuriken: { id: 'shuriken', speed: 1000, damage: 1, visual: React.createElement("div", { className: "w-5 h-5 bg-gray-700 shuriken-spin", style: { clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' } }), pierce: 2 },
+    ice_shard: { id: 'ice_shard', speed: 700, damage: 0, visual: React.createElement("div", { className: "w-3 h-3 bg-cyan-200 rounded-full shadow-[0_0_8px_2px_#67e8f9]" }), pierce: 1, aoeRange: 40, slow: { factor: 0.5, duration: 1500 } },
+    glue: { id: 'glue', speed: 500, damage: 0, visual: React.createElement("div", { className: "w-4 h-4 bg-lime-400 rounded-full shadow-[0_0_8px_2px_#a3e635]" }), pierce: 1, slow: { factor: 0.3, duration: 4000 } },
+    acid_potion: { id: 'acid_potion', speed: 400, damage: 1, visual: React.createElement("div", { className: "w-5 h-5 rounded-full bg-green-500 flex items-center justify-center" }, React.createElement("div", { className: "w-3 h-3 rounded-full bg-green-300 animate-pulse" })), pierce: 1, aoeRange: 40, canPopLead: true },
 };
 
 // TOWERS
 export const TOWER_TYPES: Record<string, TowerType> = {
     dart_monkey: { 
-        id: 'dart_monkey', name: 'Dart Monkey', cost: 150, range: 150, fireRate: 1.2, projectile: PROJECTILE_TYPES.dart, size: 25, visual: DartMonkeyVisual,
+        id: 'dart_monkey', name: 'Dart Monkey', cost: 150, range: 150, fireRate: 1.2, projectile: PROJECTILE_TYPES.dart, size: 25, 
+        visual: DartMonkeyVisual,
+        shop: { portrait: DartMonkeyVisual, description: "Throws a single dart that pops 2 bloons." },
         upgrades: [
             [
                 { name: 'Sharp Shots', cost: 140, description: 'Darts pop 1 extra balloon.', effects: { projectile: { pierce: 3 } } },
@@ -72,7 +67,9 @@ export const TOWER_TYPES: Record<string, TowerType> = {
         ]
     },
     tack_shooter: { 
-        id: 'tack_shooter', name: 'Tack Shooter', cost: 250, range: 100, fireRate: 0.8, projectile: PROJECTILE_TYPES.tack, size: 30, visual: TackShooterVisual,
+        id: 'tack_shooter', name: 'Tack Shooter', cost: 250, range: 100, fireRate: 0.8, projectile: PROJECTILE_TYPES.tack, size: 30, 
+        visual: TackShooterVisual,
+        shop: { portrait: TackShooterVisual, description: "Shoots 8 tacks in a circle." },
         upgrades: [
             [
                 { name: 'Faster Shooting', cost: 150, description: 'Shoots tacks faster.', effects: { fireRate: 1.0 } },
@@ -84,21 +81,25 @@ export const TOWER_TYPES: Record<string, TowerType> = {
             ]
         ] 
     },
-    ice_monkey: { 
-        id: 'ice_monkey', name: 'Ice Monkey', cost: 300, range: 120, fireRate: 1, projectile: PROJECTILE_TYPES.ice_shard, size: 25, visual: IceMonkeyVisual,
+     ninja_monkey: {
+        id: 'ninja_monkey', name: 'Ninja Monkey', cost: 400, range: 160, fireRate: 1.8, projectile: PROJECTILE_TYPES.shuriken, size: 25,
+        visual: NinjaMonkeyVisual,
+        shop: { portrait: NinjaMonkeyVisual, description: "Throws sharp shurikens with speed and precision." },
         upgrades: [
             [
-                { name: 'Enhanced Freeze', cost: 200, description: 'Slows balloons for longer.', effects: { projectile: { slow: { factor: 0.6, duration: 2500 } } } },
-                { name: 'Permafrost', cost: 320, description: 'Extends freeze time.', effects: { projectile: { slow: { factor: 0.5, duration: 4000 } } } },
+                { name: 'Sharp Shurikens', cost: 250, description: 'Shurikens pop 2 extra bloons.', effects: { projectile: { pierce: 4 } } },
+                { name: 'Double Shot', cost: 450, description: 'Throws 2 shurikens at once.', effects: { /* Handled in code */ } },
             ],
             [
-                { name: 'Increased Range', cost: 150, description: 'Increases attack range.', effects: { range: 150 } },
-                { name: 'Arctic Wind', cost: 380, description: 'Greatly increases range.', effects: { range: 180 } },
+                { name: 'Ninja Discipline', cost: 200, description: 'Increases attack speed.', effects: { fireRate: 2.4 } },
+                { name: 'Seeking Shuriken', cost: 350, description: 'Shurikens are faster and sharper.', effects: { projectile: { speed: 1200, pierce: 5 } } },
             ]
         ]
     },
     bomb_shooter: { 
-        id: 'bomb_shooter', name: 'Bomb Shooter', cost: 420, range: 160, fireRate: 0.6, projectile: PROJECTILE_TYPES.bomb, size: 30, visual: BombShooterVisual,
+        id: 'bomb_shooter', name: 'Bomb Shooter', cost: 420, range: 160, fireRate: 0.6, projectile: PROJECTILE_TYPES.bomb, size: 30, 
+        visual: BombShooterVisual,
+        shop: { portrait: BombShooterVisual, description: "Lobs bombs that explode on impact." },
         upgrades: [
              [
                 { name: 'Bigger Bombs', cost: 300, description: 'Increases explosion radius.', effects: { projectile: { aoeRange: 70 } } },
@@ -110,34 +111,55 @@ export const TOWER_TYPES: Record<string, TowerType> = {
             ]
         ]
     },
-    sniper_monkey: { 
-        id: 'sniper_monkey', name: 'Sniper Monkey', cost: 400, range: 1000, fireRate: 0.5, projectile: PROJECTILE_TYPES.bullet, size: 25, visual: SniperMonkeyVisual,
+    ice_monkey: {
+        id: 'ice_monkey', name: 'Ice Monkey', cost: 450, range: 120, fireRate: 0.8, projectile: PROJECTILE_TYPES.ice_shard, size: 30,
+        visual: IceMonkeyVisual,
+        shop: { portrait: IceMonkeyVisual, description: "Freezes nearby bloons, stopping them in their tracks." },
         upgrades: [
             [
-                { name: 'Full Metal Jacket', cost: 300, description: 'Can pop Lead balloons.', effects: { projectile: { pierce: 2, canPopLead: true } } },
-                { name: 'Armor Piercing Darts', cost: 650, description: 'Bullets pop 5 balloons.', effects: { projectile: { pierce: 5 } } },
+                { name: 'Larger Radius', cost: 200, description: 'Increases freeze area.', effects: { range: 140, projectile: { aoeRange: 60 } } },
+                { name: 'Ice Shards', cost: 350, description: 'Frozen bloons pop when thawed.', effects: { projectile: { damage: 1 } } },
             ],
             [
-                { name: 'Fast Firing', cost: 250, description: 'Shoots faster.', effects: { fireRate: 0.8 } },
-                { name: 'Semi-Automatic', cost: 600, description: 'Shoots much faster.', effects: { fireRate: 1.5 } },
+                { name: 'Permafrost', cost: 300, description: 'Slows bloons permanently.', effects: { projectile: { slow: { factor: 0.7, duration: 3000 } } } },
+                { name: 'Deep Freeze', cost: 400, description: 'Can freeze more layers of bloons.', effects: { /* Aesthetic/Conceptual */ } },
             ]
         ]
     },
-    glue_gunner: { 
-        id: 'glue_gunner', name: 'Glue Gunner', cost: 200, range: 140, fireRate: 0.9, projectile: PROJECTILE_TYPES.glue, size: 25, visual: GlueGunnerVisual,
+    glue_gunner: {
+        id: 'glue_gunner', name: 'Glue Gunner', cost: 220, range: 160, fireRate: 0.7, projectile: PROJECTILE_TYPES.glue, size: 25,
+        visual: GlueGunnerVisual,
+        shop: { portrait: GlueGunnerVisual, description: "Shoots glue that slows down bloons." },
         upgrades: [
             [
-                { name: 'Stickier Glue', cost: 150, description: 'Glue lasts much longer.', effects: { projectile: { slow: { factor: 0.4, duration: 6000 } } } },
-                { name: 'Super Glue', cost: 300, description: 'Glue lasts a long time.', effects: { projectile: { slow: { factor: 0.3, duration: 10000 } } } },
+                { name: 'Glue Splatter', cost: 300, description: 'Glue hits multiple bloons.', effects: { projectile: { aoeRange: 20, pierce: 6 } } },
+                { name: 'Corrosive Glue', cost: 400, description: 'Glue dissolves bloons over time.', effects: { projectile: { damage: 1 } } },
             ],
             [
-                { name: 'Glue Soak', cost: 200, description: 'Glue can soak through 2 layers.', effects: { projectile: { pierce: 2 } } },
-                { name: 'Corrosive Glue', cost: 350, description: 'Glue damages balloons.', effects: { projectile: { damage: 1, pierce: 3 } } },
+                { name: 'Stickier Glue', cost: 250, description: 'Slows bloons down even more.', effects: { projectile: { slow: { factor: 0.1, duration: 5000 } } } },
+                { name: 'Glue Hose', cost: 420, description: 'Shoots glue much faster.', effects: { fireRate: 1.4 } },
+            ]
+        ]
+    },
+    alchemist: {
+        id: 'alchemist', name: 'Alchemist', cost: 500, range: 150, fireRate: 0.8, projectile: PROJECTILE_TYPES.acid_potion, size: 25,
+        visual: AlchemistVisual,
+        shop: { portrait: AlchemistVisual, description: "Throws acid potions that can melt Lead." },
+        upgrades: [
+            [
+                { name: 'Larger Potions', cost: 300, description: 'Increases splash radius.', effects: { projectile: { aoeRange: 60 } } },
+                { name: 'Acidic Mixture Dip', cost: 500, description: 'Acid is more potent.', effects: { projectile: { damage: 2, pierce: 3 } } },
+            ],
+            [
+                { name: 'Faster Throwing', cost: 350, description: 'Throws potions faster.', effects: { fireRate: 1.2 } },
+                { name: 'Unstable Concoction', cost: 600, description: 'Potions are more damaging.', effects: { projectile: { damage: 3 } } },
             ]
         ]
     },
     super_monkey: { 
-        id: 'super_monkey', name: 'Super Monkey', cost: 1800, range: 200, fireRate: 5, projectile: PROJECTILE_TYPES.plasma, size: 30, visual: SuperMonkeyVisual,
+        id: 'super_monkey', name: 'Super Monkey', cost: 1800, range: 200, fireRate: 5, projectile: PROJECTILE_TYPES.plasma, size: 30, 
+        visual: SuperMonkeyVisual,
+        shop: { portrait: SuperMonkeyVisual, description: "Shoots plasma blasts at super speed." },
         upgrades: [
             [
                 { name: 'Laser Blasts', cost: 1200, description: 'Shots pop more balloons.', effects: { projectile: { pierce: 5 } } },
@@ -149,77 +171,12 @@ export const TOWER_TYPES: Record<string, TowerType> = {
             ]
         ]
     },
-    ninja_monkey: {
-        id: 'ninja_monkey', name: 'Ninja Monkey', cost: 450, range: 160, fireRate: 3.0, projectile: PROJECTILE_TYPES.shuriken, size: 25, visual: NinjaMonkeyVisual,
-        upgrades: [
-            [
-                { name: 'Ninja Discipline', cost: 250, description: 'Increases attack speed.', effects: { fireRate: 4.0 } },
-                { name: 'Double Shot', cost: 400, description: 'Throws 2 shurikens at once.', effects: { /* Handled in code */ } },
-            ],
-            [
-                { name: 'Sharp Shurikens', cost: 300, description: 'Shurikens pop 3 extra balloons.', effects: { projectile: { pierce: 6 } } },
-                { name: 'Flash Bomb', cost: 600, description: 'Throws a small bomb that can pop Lead.', effects: { projectile: { damage: 2, aoeRange: 30, canPopLead: true } } },
-            ]
-        ]
-    },
-    alchemist: {
-        id: 'alchemist', name: 'Alchemist', cost: 500, range: 140, fireRate: 0.8, projectile: PROJECTILE_TYPES.acid_potion, size: 25, visual: AlchemistVisual,
-        upgrades: [
-            [
-                { name: 'Larger Potions', cost: 250, description: 'Increases splash radius.', effects: { projectile: { aoeRange: 60 } } },
-                { name: 'Perishing Potions', cost: 500, description: 'Potions deal more damage.', effects: { projectile: { damage: 3 } } },
-            ],
-            [
-                { name: 'Faster Throwing', cost: 350, description: 'Throws potions faster.', effects: { fireRate: 1.2 } },
-                { name: 'Acidic Mixture Dip', cost: 600, description: 'Potions can dissolve more layers.', effects: { projectile: { pierce: 5 } } },
-            ]
-        ]
-    },
-    druid: {
-        id: 'druid', name: 'Druid', cost: 350, range: 150, fireRate: 1.0, projectile: PROJECTILE_TYPES.thorn, size: 25, visual: DruidVisual,
-        upgrades: [
-            [
-                { name: 'Hard Thorns', cost: 200, description: 'Thorns can pop more balloons.', effects: { projectile: { pierce: 8 } } },
-                { name: 'Heart of Thunder', cost: 750, description: 'Attacks can pop Lead balloons and deal more damage.', effects: { projectile: { damage: 3, canPopLead: true } } },
-            ],
-            [
-                { name: 'Druid of the Jungle', cost: 300, description: 'Increases attack range.', effects: { range: 180 } },
-                { name: 'Heart of Vengeance', cost: 400, description: 'Attacks faster.', effects: { fireRate: 1.5 } },
-            ]
-        ]
-    },
-    mortar_tower: {
-        id: 'mortar_tower', name: 'Mortar Tower', cost: 600, range: 250, fireRate: 0.5, projectile: PROJECTILE_TYPES.mortar_shell, size: 30, visual: MortarTowerVisual,
-        upgrades: [
-            [
-                { name: 'Bigger Blast', cost: 400, description: 'Increases explosion radius.', effects: { projectile: { aoeRange: 100 } } },
-                { name: 'Bloon Buster', cost: 800, description: 'Shells deal more damage.', effects: { projectile: { damage: 5 } } },
-            ],
-            [
-                { name: 'Increased Accuracy', cost: 200, description: 'Slightly increases attack speed.', effects: { fireRate: 0.7 } },
-                { name: 'Rapid Reload', cost: 700, description: 'Greatly increases attack speed.', effects: { fireRate: 1.2 } },
-            ]
-        ]
-    },
-    spike_factory: {
-        id: 'spike_factory', name: 'Spike Factory', cost: 700, range: 120, fireRate: 0.3, projectile: PROJECTILE_TYPES.spike, size: 30, visual: SpikeFactoryVisual,
-        upgrades: [
-            [
-                { name: 'Faster Production', cost: 450, description: 'Produces spikes faster.', effects: { fireRate: 0.5 } },
-                { name: 'Even Faster Production', cost: 650, description: 'Produces spikes much faster.', effects: { fireRate: 0.8 } },
-            ],
-            [
-                { name: 'Bigger Stacks', cost: 500, description: 'Spikes can pop more balloons.', effects: { projectile: { pierce: 20 } } },
-                { name: 'White Hot Spikes', cost: 700, description: 'Spikes can pop Lead balloons.', effects: { projectile: { canPopLead: true } } },
-            ]
-        ]
-    },
 };
 
 // BALLOONS
 export const BALLOON_TYPES: Record<string, BalloonType> = {
-    red: { id: 'red', health: 1, speed: 75, money: 3, color: '#ef4444', size: 15 },
-    blue: { id: 'blue', health: 1, speed: 90, money: 3, color: '#3b82f6', size: 16, children: ['red'] },
+    red: { id: 'red', health: 1, speed: 75, money: 3, color: '#ef4444', size: 15, visual: RedBalloonVisual },
+    blue: { id: 'blue', health: 1, speed: 90, money: 3, color: '#3b82f6', size: 16, children: ['red'], visual: BlueBalloonVisual },
     green: { id: 'green', health: 1, speed: 110, money: 4, color: '#22c55e', size: 17, children: ['blue'] },
     yellow: { id: 'yellow', health: 1, speed: 150, money: 5, color: '#facc15', size: 18, children: ['green'] },
     pink: { id: 'pink', health: 1, speed: 200, money: 6, color: '#f472b6', size: 19, children: ['yellow'] },
@@ -231,12 +188,44 @@ export const BALLOON_TYPES: Record<string, BalloonType> = {
     moab: { id: 'moab', health: 200, speed: 40, money: 100, color: '#0000ff', size: 50, isBlimp: true, children: ['ceramic', 'ceramic', 'ceramic', 'ceramic'], visual: MOABVisual },
 };
 
-// GAME PATH
-export const GAME_PATH: Vector2D[] = [
-    { x: -50, y: 150 }, { x: 150, y: 150 }, { x: 150, y: 400 }, { x: 400, y: 400 },
-    { x: 400, y: 100 }, { x: 650, y: 100 }, { x: 650, y: 500 }, { x: 900, y: 500 },
-    { x: 900, y: 250 }, { x: 1150, y: 250 }, { x: 1150, y: 650 }, { x: 1250, y: 650 },
-];
+// MAPS
+const meadowPath: Vector2D[] = [ { x: -50, y: 150 }, { x: 150, y: 150 }, { x: 150, y: 400 }, { x: 400, y: 400 }, { x: 400, y: 100 }, { x: 650, y: 100 }, { x: 650, y: 500 }, { x: 900, y: 500 }, { x: 900, y: 250 }, { x: 1150, y: 250 }, { x: 1150, y: 650 }, { x: 1250, y: 650 }];
+const candyPath: Vector2D[] = [ { x: -50, y: 400 }, { x: 150, y: 400 }, { x: 250, y: 300 }, { x: 150, y: 200 }, { x: 250, y: 100 }, { x: 450, y: 100 }, { x: 550, y: 200 }, { x: 450, y: 300 }, { x: 550, y: 400 }, { x: 450, y: 500 }, { x: 550, y: 600 }, { x: 750, y: 600 }, { x: 850, y: 500 }, { x: 750, y: 400 }, { x: 850, y: 300 }, { x: 1000, y: 300 }, { x: 1100, y: 400 }, { x: 1250, y: 400 }];
+const volcanicPath: Vector2D[] = [ { x: 600, y: 850 }, { x: 600, y: 650 }, { x: 200, y: 650 }, { x: 200, y: 150 }, { x: 1000, y: 150 }, { x: 1000, y: 650 }, { x: 750, y: 650 }, { x: 750, y: 400 }, { x: 450, y: 400 }, { x: 450, y: 850 }];
+
+const MeadowVisual = () => React.createElement("svg", { width: "1200", height: "800", viewBox: "0 0 1200 800", className: "absolute top-0 left-0 pointer-events-none" }, React.createElement("defs", null, React.createElement("filter", { id: "shadow" }, React.createElement("feDropShadow", { dx: "2", dy: "4", stdDeviation: "3", floodColor: "#000000", floodOpacity: "0.3" })), React.createElement("radialGradient", { id: "grassGrad", cx: "50%", cy: "50%", r: "70%" }, React.createElement("stop", { offset: "0%", stopColor: "#84cc16" }), React.createElement("stop", { offset: "100%", stopColor: "#4d7c0f" }))), React.createElement("rect", { width: "1200", height: "800", fill: "url(#grassGrad)" }), React.createElement("path", { d: meadowPath.map((p, i) => (i === 0 ? 'M' : 'L') + `${p.x} ${p.y}`).join(' '), stroke: "#a17b54", strokeWidth: "44", fill: "none", strokeLinecap: "round", strokeLinejoin: "round" }), React.createElement("path", { d: meadowPath.map((p, i) => (i === 0 ? 'M' : 'L') + `${p.x} ${p.y}`).join(' '), stroke: "#7a5c3e", strokeWidth: "38", fill: "none", strokeLinecap: "round", strokeLinejoin: "round", strokeDasharray: "1 15" }), React.createElement("path", { d: "M 950 50 C 850 100, 850 200, 950 250 C 1050 200, 1050 100, 950 50 Z", fill: "#38bdf8", stroke: "#0ea5e9", strokeWidth: "4" }), React.createElement("path", { d: "M 50 500 C -50 550, -50 650, 50 700 C 150 650, 150 550, 50 500 Z", fill: "#38bdf8", stroke: "#0ea5e9", strokeWidth: "4" }), React.createElement("circle", { cx: "970", cy: "70", r: "10", fill: "white" }), React.createElement("circle", { cx: "1000", cy: "90", r: "15", fill: "white" }), React.createElement("circle", { cx: "940", cy: "100", r: "20", fill: "white" }), React.createElement("g", { filter: "url(#shadow)" }, React.createElement("path", { d: "M100 250 a50,50 0 1,0 100,0 a50,50 0 1,0 -100,0", fill: "#22c55e" }), React.createElement("path", { d: "M120 280 L130 350 L110 350 Z", fill: "#8c5a2b" }), React.createElement("path", { d: "M1100 150 a40,40 0 1,0 80,0 a40,40 0 1,0 -80,0", fill: "#16a34a" }), React.createElement("path", { d: "M1120 180 L1130 240 L1110 240 Z", fill: "#8c5a2b" }), React.createElement("path", { d: "M700 700 a60,60 0 1,0 120,0 a60,60 0 1,0 -120,0", fill: "#22c55e" }), React.createElement("path", { d: "M720 730 L740 820 L700 820 Z", fill: "#8c5a2b" })));
+const CandyVisual = () => React.createElement("svg", { width: "1200", height: "800", viewBox: "0 0 1200 800", className: "absolute top-0 left-0 pointer-events-none" }, React.createElement("defs", null, React.createElement("radialGradient", { id: "candyGrad", cx: "50%", cy: "50%", r: "70%" }, React.createElement("stop", { offset: "0%", stopColor: "#fbcfe8" }), React.createElement("stop", { offset: "100%", stopColor: "#f472b6" })), React.createElement("pattern", { id: "sprinkles", patternUnits: "userSpaceOnUse", width: "50", height: "50" }, React.createElement("circle", { cx: "10", cy: "10", r: "3", fill: "#3b82f6" }), React.createElement("rect", { x: "20", y: "30", width: "10", height: "4", fill: "#22c55e", transform: "rotate(45 25 32)" }), React.createElement("circle", { cx: "40", cy: "40", r: "2", fill: "#facc15" }))), React.createElement("rect", { width: "1200", height: "800", fill: "url(#candyGrad)" }), React.createElement("rect", { width: "1200", height: "800", fill: "url(#sprinkles)", opacity: "0.5" }), React.createElement("path", { d: "M0,700 C 300,650 900,750 1200,700 L 1200,800 L 0,800 Z", fill: "#7c3a2e" }), React.createElement("path", { d: candyPath.map((p, i) => (i === 0 ? 'M' : 'L') + `${p.x} ${p.y}`).join(' '), stroke: "#d97706", strokeWidth: "44", fill: "none", strokeLinecap: "round", strokeLinejoin: "round" }), React.createElement("path", { d: candyPath.map((p, i) => (i === 0 ? 'M' : 'L') + `${p.x} ${p.y}`).join(' '), stroke: "#f59e0b", strokeWidth: "38", fill: "none", strokeLinecap: "round", strokeLinejoin: "round", strokeDasharray: "10 10" }), React.createElement("g", null, React.createElement("circle", { cx: "100", cy: "100", r: "30", fill: "#ef4444" }), React.createElement("circle", { cx: "100", cy: "100", r: "15", fill: "white" }), React.createElement("path", { d: "M100 130 L 100 200", stroke: "#fef3c7", strokeWidth: "10" }), React.createElement("circle", { cx: "300", cy: "600", r: "40", fill: "#3b82f6" }), React.createElement("path", { d: "M300 640 L 300 750", stroke: "#fef3c7", strokeWidth: "10" }), React.createElement("circle", { cx: "900", cy: "150", r: "50", fill: "#facc15" }), React.createElement("circle", { cx: "900", cy: "150", r: "25", fill: "#f87171" }), React.createElement("path", { d: "M900 200 L 900 300", stroke: "#fef3c7", strokeWidth: "10" })));
+const VolcanicVisual = () => React.createElement("svg", { width: "1200", height: "800", viewBox: "0 0 1200 800", className: "absolute top-0 left-0 pointer-events-none" }, React.createElement("defs", null, React.createElement("radialGradient", { id: "volcanicGrad", cx: "50%", cy: "50%", r: "70%" }, React.createElement("stop", { offset: "0%", stopColor: "#262626" }), React.createElement("stop", { offset: "100%", stopColor: "#0a0a0a" }))), React.createElement("rect", { width: "1200", height: "800", fill: "url(#volcanicGrad)" }), React.createElement("path", { d: volcanicPath.map((p, i) => (i === 0 ? 'M' : 'L') + `${p.x} ${p.y}`).join(' '), stroke: "#171717", strokeWidth: "46", fill: "none", strokeLinecap: "round", strokeLinejoin: "round" }), React.createElement("path", { d: volcanicPath.map((p, i) => (i === 0 ? 'M' : 'L') + `${p.x} ${p.y}`).join(' '), stroke: "#404040", strokeWidth: "40", fill: "none", strokeLinecap: "round", strokeLinejoin: "round" }), React.createElement("ellipse", { cx: "300", cy: "500", rx: "200", ry: "100", fill: "#dc2626", filter: "url(#glow)" }), React.createElement("ellipse", { cx: "900", cy: "500", rx: "250", ry: "120", fill: "#dc2626", filter: "url(#glow)" }), React.createElement("ellipse", { cx: "600", cy: "250", rx: "300", ry: "80", fill: "#dc2626", filter: "url(#glow)" }), React.createElement("g", null, React.createElement("path", { d: "M50 50 L 100 100 L 70 120 Z", fill: "#a16207" }), React.createElement("path", { d: "M1100 700 L 1150 750 L 1120 770 Z", fill: "#a16207" }), React.createElement("path", { d: "M1150 50 L 1180 80 L 1140 90 Z", fill: "#f59e0b", filter: "url(#glow)" }), React.createElement("path", { d: "M80 750 L 120 780 L 90 790 Z", fill: "#f59e0b", filter: "url(#glow)" })), React.createElement("filter", { id: "glow" }, React.createElement("feGaussianBlur", { stdDeviation: "10", result: "coloredBlur" }), React.createElement("feMerge", null, React.createElement("feMergeNode", { in: "coloredBlur" }), React.createElement("feMergeNode", { in: "SourceGraphic" }))));
+
+export const MAPS: Record<MapId, MapData> = {
+    green_meadow: {
+        id: 'green_meadow',
+        name: 'Green Meadow',
+        path: meadowPath,
+        visual: React.createElement(MeadowVisual),
+        thumbnail: React.createElement("svg", { viewBox: "0 0 120 80" }, React.createElement("rect", { width: "120", height: "80", fill: "#65a30d" }), React.createElement("path", { d: meadowPath.map(p => ({ x: p.x / 10, y: p.y / 10 })).map((p, i) => (i === 0 ? 'M' : 'L') + `${p.x} ${p.y}`).join(' '), stroke: "#a17b54", strokeWidth: "4", fill: "none" }), React.createElement("circle", { cx: "10", cy: "60", r: "10", fill: "#38bdf8" }))
+    },
+    candy_canyon: {
+        id: 'candy_canyon',
+        name: 'Candy Canyon',
+        path: candyPath,
+        visual: React.createElement(CandyVisual),
+        thumbnail: React.createElement("svg", { viewBox: "0 0 120 80" }, React.createElement("rect", { width: "120", height: "80", fill: "#f472b6" }), React.createElement("path", { d: "M0,70 L 30,65 L 90,75 L 120,70", stroke: "#7c3a2e", strokeWidth: "10", fill: "none" }), React.createElement("path", { d: candyPath.map(p => ({ x: p.x / 10, y: p.y / 10 })).map((p, i) => (i === 0 ? 'M' : 'L') + `${p.x} ${p.y}`).join(' '), stroke: "#f59e0b", strokeWidth: "4", fill: "none" }), React.createElement("circle", { cx: "10", cy: "10", r: "5", fill: "#ef4444" }), React.createElement("path", { d: "M10 15 L 10 25", stroke: "white", strokeWidth: "2" }))
+    },
+    volcanic_pass: {
+        id: 'volcanic_pass',
+        name: 'Volcanic Pass',
+        path: volcanicPath,
+        visual: React.createElement(VolcanicVisual),
+        thumbnail: React.createElement("svg", { viewBox: "0 0 120 80" }, React.createElement("rect", { width: "120", height: "80", fill: "#171717" }), React.createElement("path", { d: volcanicPath.map(p => ({ x: p.x / 10, y: p.y / 10 })).map((p, i) => (i === 0 ? 'M' : 'L') + `${p.x} ${p.y}`).join(' '), stroke: "#525252", strokeWidth: "4", fill: "none" }), React.createElement("circle", { cx: "60", cy: "25", r: "20", fill: "#dc2626" }), React.createElement("circle", { cx: "30", cy: "50", r: "15", fill: "#dc2626" })),
+        unplaceableAreas: [
+            { x: 100, y: 400, width: 400, height: 200 }, // lava pool 1
+            { x: 650, y: 380, width: 500, height: 240 }, // lava pool 2
+            { x: 300, y: 170, width: 600, height: 160 }, // lava pool 3
+        ]
+    }
+};
+
 
 // WAVES
 export const WAVES: Wave[] = [

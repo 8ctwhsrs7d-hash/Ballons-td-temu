@@ -3,20 +3,22 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Game from './components/Game';
 import StartScreen from './components/StartScreen';
 import GameOverScreen from './components/GameOverScreen';
-import type { GameStatus, Difficulty, GameMode } from './types';
+import type { GameStatus, Difficulty, GameMode, MapId } from './types';
+import { MAPS } from './constants';
 
-// Sound Assets
+// Sound Assets - Replaced with a professional, high-quality sound library
 const soundFiles = {
-    music: 'https://cdn.pixabay.com/audio/2022/08/04/audio_35255a2897.mp3',
-    pop: 'https://cdn.pixabay.com/audio/2021/08/04/audio_bb630cc098.mp3',
-    place: 'https://cdn.pixabay.com/audio/2022/03/15/audio_7547146b2a.mp3',
-    upgrade: 'https://cdn.pixabay.com/audio/2022/11/22/audio_75b47b9739.mp3',
-    sell: 'https://cdn.pixabay.com/audio/2022/03/10/audio_c898993693.mp3',
-    leak: 'https://cdn.pixabay.com/audio/2023/08/13/audio_1cc3c3298c.mp3',
-    start_wave: 'https://cdn.pixabay.com/audio/2021/10/14/audio_a725e63841.mp3',
-    game_over: 'https://cdn.pixabay.com/audio/2022/03/14/audio_3d12a6288b.mp3',
-    click: 'https://cdn.pixabay.com/audio/2022/03/15/audio_51c27e323c.mp3',
-    victory: 'https://cdn.pixabay.com/audio/2022/09/23/audio_03f74e3009.mp3',
+    music: 'https://cdn.jsdelivr.net/gh/dev-addict/sound-assets-for-btd@main/btd-music.mp3',
+    pop: 'https://cdn.jsdelivr.net/gh/dev-addict/sound-assets-for-btd@main/pop-2.mp3',
+    place: 'https://cdn.jsdelivr.net/gh/dev-addict/sound-assets-for-btd@main/place-2.mp3',
+    upgrade: 'https://cdn.jsdelivr.net/gh/dev-addict/sound-assets-for-btd@main/upgrade-2.mp3',
+    sell: 'https://cdn.jsdelivr.net/gh/dev-addict/sound-assets-for-btd@main/sell-2.mp3',
+    leak: 'https://cdn.jsdelivr.net/gh/dev-addict/sound-assets-for-btd@main/leak-2.mp3',
+    start_wave: 'https://cdn.jsdelivr.net/gh/dev-addict/sound-assets-for-btd@main/start-wave-2.mp3',
+    game_over: 'https://cdn.jsdelivr.net/gh/dev-addict/sound-assets-for-btd@main/game-over-2.mp3',
+    click: 'https://cdn.jsdelivr.net/gh/dev-addict/sound-assets-for-btd@main/click-2.mp3',
+    victory: 'https://cdn.jsdelivr.net/gh/dev-addict/sound-assets-for-btd@main/victory-2.mp3',
+    cash: 'https://cdn.jsdelivr.net/gh/dev-addict/sound-assets-for-btd@main/cash.mp3',
 };
 
 type SoundName = keyof typeof soundFiles;
@@ -31,6 +33,8 @@ const App: React.FC = () => {
   // Game settings
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [gameMode, setGameMode] = useState<GameMode>('fixed');
+  const [mapId, setMapId] = useState<MapId>('green_meadow');
+
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioBuffersRef = useRef<{ [key in SoundName]?: AudioBuffer }>({});
@@ -80,7 +84,7 @@ const App: React.FC = () => {
     await Promise.all(loadPromises);
   }, []);
 
-  const handleStartGame = useCallback(async (diff: Difficulty, mode: GameMode) => {
+  const handleStartGame = useCallback(async (diff: Difficulty, mode: GameMode, map: MapId) => {
     if (!audioContextRef.current) {
         try {
             const context = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -98,6 +102,7 @@ const App: React.FC = () => {
     playSound('click', 0.7);
     setDifficulty(diff);
     setGameMode(mode);
+    setMapId(map);
     setGameStatus('playing');
   }, [preloadSounds, playSound]);
 
@@ -128,18 +133,23 @@ const App: React.FC = () => {
       const gameHeight = 800;
       const scaleX = window.innerWidth / gameWidth;
       const scaleY = window.innerHeight / gameHeight;
-      const scale = Math.min(scaleX, scaleY);
+      const scale = Math.min(scaleX, scaleY, 1);
       gameWrapperRef.current.style.transform = `scale(${scale})`;
     }
   }, []);
 
   useEffect(() => {
+    if (gameStatus === 'playing') {
+      updateGameScale();
+      window.addEventListener('resize', updateGameScale);
+      return () => window.removeEventListener('resize', updateGameScale);
+    }
+  }, [gameStatus, updateGameScale]);
+
+  useEffect(() => {
     const audioContext = audioContextRef.current;
 
     if (gameStatus === 'playing' && audioContext) {
-        updateGameScale();
-        window.addEventListener('resize', updateGameScale);
-
         if (!musicSourceRef.current) {
             const musicBuffer = audioBuffersRef.current.music;
             if (musicBuffer) {
@@ -154,11 +164,10 @@ const App: React.FC = () => {
                 gainNode.connect(audioContext.destination);
                 musicSourceRef.current = source;
                 
-                gainNode.gain.setValueAtTime(isMuted ? 0 : 0.2, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(isMuted ? 0 : 0.3, audioContext.currentTime);
                 source.start();
             }
         }
-        return () => window.removeEventListener('resize', updateGameScale);
     } else {
         if (musicSourceRef.current) {
             musicSourceRef.current.stop();
@@ -167,12 +176,12 @@ const App: React.FC = () => {
             musicGainRef.current = null;
         }
     }
-  }, [gameStatus, updateGameScale, isMuted]);
+  }, [gameStatus, isMuted]);
 
   useEffect(() => {
     if (musicGainRef.current && audioContextRef.current) {
         musicGainRef.current.gain.linearRampToValueAtTime(
-            isMuted ? 0 : 0.2,
+            isMuted ? 0 : 0.3,
             audioContextRef.current.currentTime + 0.1
         );
     }
@@ -181,8 +190,43 @@ const App: React.FC = () => {
   const MuteIcon = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17l-6-6m0 6l6-6" /></svg>;
   const UnmuteIcon = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>;
 
+  const renderContent = () => {
+      if (gameStatus === 'playing') {
+          return (
+              <div 
+                ref={gameWrapperRef} 
+                style={{ 
+                    width: 1200 + 320, 
+                    height: 800,
+                    transformOrigin: 'center center',
+                    transition: 'transform 0.2s ease-out'
+                }}
+              >
+                 <Game 
+                    key={`${difficulty}-${gameMode}-${mapId}-${Date.now()}`} 
+                    onGameOver={handleGameOver} 
+                    playSound={playSound}
+                    difficulty={difficulty}
+                    gameMode={gameMode}
+                    mapId={mapId}
+                  />
+              </div>
+          );
+      }
+
+      return (
+          <div className="w-full h-full menu-background flex items-center justify-center">
+              {[...Array(6)].map((_, i) => <div key={i} className="balloon-bg"></div>)}
+              <div className="z-10">
+                {gameStatus === 'start_screen' && <StartScreen onStart={handleStartGame} />}
+                {gameStatus === 'game_over' && <GameOverScreen wave={finalWave} result={gameResult} onPlayAgain={handlePlayAgain} onMenuReturn={handleReturnToMenu} />}
+              </div>
+          </div>
+      );
+  }
+
   return (
-    <div className="bg-gray-800 text-white w-screen h-screen flex items-center justify-center font-sans overflow-hidden">
+    <div className="w-full h-full font-sans overflow-hidden relative flex items-center justify-center">
         <button
             onClick={() => setIsMuted(!isMuted)}
             className="absolute top-4 right-4 z-50 p-2 bg-slate-900/50 rounded-full hover:bg-slate-700/80 transition-colors"
@@ -190,19 +234,7 @@ const App: React.FC = () => {
         >
             {isMuted ? <MuteIcon /> : <UnmuteIcon />}
         </button>
-      {gameStatus === 'start_screen' && <StartScreen onStart={handleStartGame} />}
-      {gameStatus === 'playing' && (
-          <div ref={gameWrapperRef} style={{ width: 1200 + 320, height: 800, transformOrigin: 'center center', transition: 'transform 0.2s ease' }}>
-             <Game 
-                key={`${difficulty}-${gameMode}-${Date.now()}`} 
-                onGameOver={handleGameOver} 
-                playSound={playSound}
-                difficulty={difficulty}
-                gameMode={gameMode}
-              />
-          </div>
-      )}
-      {gameStatus === 'game_over' && <GameOverScreen wave={finalWave} result={gameResult} onPlayAgain={handlePlayAgain} onMenuReturn={handleReturnToMenu} />}
+        {renderContent()}
     </div>
   );
 };
