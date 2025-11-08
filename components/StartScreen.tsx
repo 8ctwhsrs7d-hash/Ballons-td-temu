@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import type { Difficulty, GameMode, MapId } from '../types';
-import { MAPS } from '../constants';
+import type { Difficulty, GameMode, MapId } from '../types.ts';
+import { MAPS } from '../constants.ts';
 
 interface StartScreenProps {
   onStart: (difficulty: Difficulty, mode: GameMode, map: MapId) => void;

@@ -1,10 +1,10 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import Game from './components/Game';
-import StartScreen from './components/StartScreen';
-import GameOverScreen from './components/GameOverScreen';
-import type { GameStatus, Difficulty, GameMode, MapId } from './types';
-import { MAPS } from './constants';
+import Game from './components/Game.tsx';
+import StartScreen from './components/StartScreen.tsx';
+import GameOverScreen from './components/GameOverScreen.tsx';
+import type { GameStatus, Difficulty, GameMode, MapId } from './types.ts';
+import { MAPS } from './constants.ts';
 
 // Sound Assets - Replaced with a professional, high-quality sound library
 const soundFiles = {

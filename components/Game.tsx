@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useReducer, useRef, useCallback, useMemo } from 'react';
-import { TOWER_TYPES, BALLOON_TYPES, WAVES, PROJECTILE_TYPES, WAVE_COOLDOWN_MS, DIFFICULTY_SETTINGS, MAPS } from '../constants';
-import type { BalloonType, TowerType, TowerInstance, BalloonInstance, ProjectileInstance, Vector2D, PopAnimationInstance, ExplosionInstance, Difficulty, GameMode, Wave, MuzzleFlashInstance, CashPopInstance, MapId, MapData } from '../types';
+import { TOWER_TYPES, BALLOON_TYPES, WAVES, PROJECTILE_TYPES, WAVE_COOLDOWN_MS, DIFFICULTY_SETTINGS, MAPS } from '../constants.ts';
+import type { BalloonType, TowerType, TowerInstance, BalloonInstance, ProjectileInstance, Vector2D, PopAnimationInstance, ExplosionInstance, Difficulty, GameMode, Wave, MuzzleFlashInstance, CashPopInstance, MapId, MapData } from '../types.ts';
 import { produce } from 'immer';
 
 // UTILITY FUNCTIONS

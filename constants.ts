@@ -1,5 +1,5 @@
 
-import type { TowerType, BalloonType, Wave, Vector2D, ProjectileType, Difficulty, MapData, MapId } from './types';
+import type { TowerType, BalloonType, Wave, Vector2D, ProjectileType, Difficulty, MapData, MapId } from './types.ts';
 import React from 'react';
 
 // GAME CONFIG
